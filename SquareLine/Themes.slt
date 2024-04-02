@@ -1,8 +1,39 @@
 {
   "deftheme": {
     "name": "Default",
-    "properties": []
+    "properties": [
+      {
+        "nid": 0,
+        "strtype": "THEME_COLOR",
+        "strval": "BG Color",
+        "intarray": [
+          86,
+          71,
+          217,
+          255
+        ],
+        "InheritedType": 0
+      }
+    ]
   },
-  "themes": [],
+  "themes": [
+    {
+      "name": "Stop",
+      "properties": [
+        {
+          "nid": 0,
+          "strtype": "THEME_COLOR",
+          "strval": "BG Color",
+          "intarray": [
+            96,
+            96,
+            96,
+            255
+          ],
+          "InheritedType": 0
+        }
+      ]
+    }
+  ],
   "selected_theme": "Default"
 }

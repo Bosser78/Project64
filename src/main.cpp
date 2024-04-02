@@ -309,6 +309,8 @@ void onBrightnessChange(lv_event_t *e)
 
 void setup()
 {
+   pinMode(33, OUTPUT); 
+
   Serial.begin(115200);
 
   tft.init();
