@@ -10,6 +10,9 @@
 extern "C" {
 #endif
 
+void setOnOff(lv_event_t * e);
+void setSpeed(lv_event_t * e);
+
 #ifdef __cplusplus
 } /*extern "C"*/
 #endif

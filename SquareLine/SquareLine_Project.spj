@@ -4141,7 +4141,7 @@
               {
                 "nid": 1997106094,
                 "strtype": "OBJECT/Name",
-                "strval": "Button1",
+                "strval": "BTNpower",
                 "InheritedType": 10
               },
               {
@@ -4333,6 +4333,7 @@
               },
               {
                 "nid": -1419159113,
+                "flags": 1048576,
                 "strtype": "OBJECT/States",
                 "InheritedType": 1
               },
@@ -4388,6 +4389,26 @@
                 "part": "lv.PART.MAIN",
                 "childs": [
                   {
+                    "nid": 551138994,
+                    "strtype": "_style/StyleState",
+                    "strval": "DEFAULT",
+                    "childs": [
+                      {
+                        "nid": -1672265047,
+                        "strtype": "_style/Bg_Color",
+                        "strval": "BG Color",
+                        "intarray": [
+                          86,
+                          71,
+                          217,
+                          255
+                        ],
+                        "InheritedType": 7
+                      }
+                    ],
+                    "InheritedType": 1
+                  },
+                  {
                     "nid": -2057788985,
                     "strtype": "_style/StyleState",
                     "strval": "CHECKED",
@@ -4411,9 +4432,153 @@
                 "strtype": "BUTTON/Style_main",
                 "strval": "lv.PART.MAIN, Rectangle, Pad, Text ",
                 "InheritedType": 11
+              },
+              {
+                "disabled": false,
+                "nid": 1911244456,
+                "strtype": "BUTTON/EventHandler",
+                "strval": "RELEASED",
+                "childs": [
+                  {
+                    "nid": 2077118148,
+                    "strtype": "_custom/name",
+                    "strval": "setStateOnOff",
+                    "InheritedType": 10
+                  },
+                  {
+                    "nid": 979338266,
+                    "strtype": "_custom/condition_C",
+                    "strval": "",
+                    "InheritedType": 10
+                  },
+                  {
+                    "nid": -243167416,
+                    "strtype": "_custom/condition_P",
+                    "strval": "",
+                    "InheritedType": 10
+                  },
+                  {
+                    "nid": 1078451537,
+                    "flags": 1048576,
+                    "strtype": "_custom/action",
+                    "strval": "CALL FUNCTION",
+                    "childs": [
+                      {
+                        "nid": -1502672174,
+                        "strtype": "CALL FUNCTION/Name",
+                        "strval": "CALL FUNCTION",
+                        "InheritedType": 10
+                      },
+                      {
+                        "nid": 1146870235,
+                        "strtype": "CALL FUNCTION/Call",
+                        "strval": "<{Function_name}>( event_struct )",
+                        "InheritedType": 10
+                      },
+                      {
+                        "nid": 72167542,
+                        "strtype": "CALL FUNCTION/CallC",
+                        "strval": "<{Function_name}>( e );",
+                        "InheritedType": 10
+                      },
+                      {
+                        "nid": 1637096821,
+                        "strtype": "CALL FUNCTION/Function_name",
+                        "strval": "setOnOff",
+                        "InheritedType": 10
+                      },
+                      {
+                        "nid": 114107253,
+                        "strtype": "CALL FUNCTION/Dont_export_function",
+                        "strval": "False",
+                        "InheritedType": 2
+                      }
+                    ],
+                    "InheritedType": 10
+                  },
+                  {
+                    "nid": -1901775335,
+                    "flags": 1048576,
+                    "strtype": "_custom/action",
+                    "strval": "LABEL_PROPERTY",
+                    "childs": [
+                      {
+                        "nid": -1838840623,
+                        "strtype": "LABEL_PROPERTY/Name",
+                        "strval": "LABEL_PROPERTY",
+                        "InheritedType": 10
+                      },
+                      {
+                        "nid": 1832465662,
+                        "strtype": "LABEL_PROPERTY/Call",
+                        "strval": "SetLabelProperty(<{Target}>, '<{Property}>', '<{Value}>')",
+                        "InheritedType": 10
+                      },
+                      {
+                        "nid": -188787473,
+                        "strtype": "LABEL_PROPERTY/CallC",
+                        "strval": "_ui_label_set_property(<{Target}>, _UI_LABEL_PROPERTY_<{Property}>, \"<{Value}>\");",
+                        "InheritedType": 10
+                      },
+                      {
+                        "nid": 1345235586,
+                        "strtype": "LABEL_PROPERTY/Target",
+                        "strval": "GUID62638848-1018401S753387",
+                        "InheritedType": 9
+                      },
+                      {
+                        "nid": -1778335179,
+                        "strtype": "LABEL_PROPERTY/Property",
+                        "strval": "Text",
+                        "InheritedType": 3
+                      },
+                      {
+                        "nid": 27215618,
+                        "strtype": "LABEL_PROPERTY/Value",
+                        "strval": "ปิด",
+                        "InheritedType": 10
+                      }
+                    ],
+                    "InheritedType": 10
+                  },
+                  {
+                    "nid": -535171718,
+                    "strtype": "_custom/action",
+                    "strval": "SWITCH THEME",
+                    "childs": [
+                      {
+                        "nid": -516812361,
+                        "strtype": "SWITCH THEME/Name",
+                        "strval": "SWITCH THEME",
+                        "InheritedType": 10
+                      },
+                      {
+                        "nid": 2009529642,
+                        "strtype": "SWITCH THEME/Call",
+                        "strval": "SwitchTheme( <{Theme}> )",
+                        "InheritedType": 10
+                      },
+                      {
+                        "nid": 821324242,
+                        "strtype": "SWITCH THEME/CallC",
+                        "strval": "_ui_switch_theme( <{Theme}> );",
+                        "InheritedType": 10
+                      },
+                      {
+                        "nid": -1279380757,
+                        "strtype": "SWITCH THEME/Theme",
+                        "strval": "Stop",
+                        "InheritedType": 16
+                      }
+                    ],
+                    "InheritedType": 10
+                  }
+                ],
+                "InheritedType": 4
               }
             ],
-            "saved_objtypeKey": "BUTTON"
+            "saved_objtypeKey": "BUTTON",
+            "tree_closed": true
           },
           {
             "guid": "GUID22681590-1015431S3996387",
@@ -4669,7 +4834,28 @@
               },
               {
                 "part": "lv.PART.MAIN",
-                "childs": [],
+                "childs": [
+                  {
+                    "nid": -1176312304,
+                    "strtype": "_style/StyleState",
+                    "strval": "DEFAULT",
+                    "childs": [
+                      {
+                        "nid": -1000626443,
+                        "strtype": "_style/Bg_Color",
+                        "strval": "BG Color",
+                        "intarray": [
+                          86,
+                          71,
+                          217,
+                          255
+                        ],
+                        "InheritedType": 7
+                      }
+                    ],
+                    "InheritedType": 1
+                  }
+                ],
                 "nid": 612271407,
                 "strtype": "BUTTON/Style_main",
                 "strval": "lv.PART.MAIN, Rectangle, Pad, Text ",
@@ -4932,7 +5118,28 @@
               },
               {
                 "part": "lv.PART.MAIN",
-                "childs": [],
+                "childs": [
+                  {
+                    "nid": 744041180,
+                    "strtype": "_style/StyleState",
+                    "strval": "DEFAULT",
+                    "childs": [
+                      {
+                        "nid": -988782746,
+                        "strtype": "_style/Bg_Color",
+                        "strval": "BG Color",
+                        "intarray": [
+                          86,
+                          71,
+                          217,
+                          255
+                        ],
+                        "InheritedType": 7
+                      }
+                    ],
+                    "InheritedType": 1
+                  }
+                ],
                 "nid": 1417528925,
                 "strtype": "BUTTON/Style_main",
                 "strval": "lv.PART.MAIN, Rectangle, Pad, Text ",
@@ -5174,6 +5381,7 @@
               {
                 "nid": -345336516,
                 "strtype": "SLIDER/Value",
+                "integer": 50,
                 "InheritedType": 6
               },
               {
@@ -5272,47 +5480,68 @@
                       }
                     ],
                     "InheritedType": 10
+                  }
+                ],
+                "InheritedType": 4
+              },
+              {
+                "disabled": false,
+                "nid": 1704065361,
+                "strtype": "SLIDER/EventHandler",
+                "strval": "RELEASED",
+                "childs": [
+                  {
+                    "nid": -415810753,
+                    "strtype": "_custom/name",
+                    "strval": "setSpeed",
+                    "InheritedType": 10
                   },
                   {
-                    "nid": -1759726846,
+                    "nid": -2034782130,
+                    "strtype": "_custom/condition_C",
+                    "strval": "",
+                    "InheritedType": 10
+                  },
+                  {
+                    "nid": 1791187393,
+                    "strtype": "_custom/condition_P",
+                    "strval": "",
+                    "InheritedType": 10
+                  },
+                  {
+                    "nid": 326989372,
                     "strtype": "_custom/action",
-                    "strval": "SET TEXT VALUE FROM SLIDER",
+                    "strval": "CALL FUNCTION",
                     "childs": [
                       {
-                        "nid": -130618976,
-                        "strtype": "SET TEXT VALUE FROM SLIDER/Name",
-                        "strval": "SET TEXT VALUE FROM SLIDER",
+                        "nid": -576126007,
+                        "strtype": "CALL FUNCTION/Name",
+                        "strval": "CALL FUNCTION",
                         "InheritedType": 10
                       },
                       {
-                        "nid": -368594043,
-                        "strtype": "SET TEXT VALUE FROM SLIDER/Call",
-                        "strval": "SetTextValueSlider( <{Target}>, event_struct.get_target(), \"<{Prefix}>\", \"<{Postfix}>\")",
+                        "nid": -451707259,
+                        "strtype": "CALL FUNCTION/Call",
+                        "strval": "<{Function_name}>( event_struct )",
                         "InheritedType": 10
                       },
                       {
-                        "nid": 187725911,
-                        "strtype": "SET TEXT VALUE FROM SLIDER/CallC",
-                        "strval": "_ui_slider_set_text_value( <{Target}>, target, \"<{Prefix}>\", \"<{Postfix}>\");",
+                        "nid": 1898894000,
+                        "strtype": "CALL FUNCTION/CallC",
+                        "strval": "<{Function_name}>( e );",
                         "InheritedType": 10
                       },
                       {
-                        "nid": 758208851,
-                        "strtype": "SET TEXT VALUE FROM SLIDER/Target",
-                        "strval": "-",
-                        "InheritedType": 9
-                      },
-                      {
-                        "nid": 1814399171,
-                        "strtype": "SET TEXT VALUE FROM SLIDER/Prefix",
-                        "strval": "",
+                        "nid": 798671732,
+                        "strtype": "CALL FUNCTION/Function_name",
+                        "strval": "setSpeed",
                         "InheritedType": 10
                       },
                       {
-                        "nid": -1904676361,
-                        "strtype": "SET TEXT VALUE FROM SLIDER/Postfix",
-                        "strval": "",
-                        "InheritedType": 10
+                        "nid": 2097450950,
+                        "strtype": "CALL FUNCTION/Dont_export_function",
+                        "strval": "False",
+                        "InheritedType": 2
                       }
                     ],
                     "InheritedType": 10
@@ -5331,7 +5560,7 @@
               {
                 "nid": -163540515,
                 "strtype": "OBJECT/Name",
-                "strval": "Label9",
+                "strval": "LabelOnOff",
                 "InheritedType": 10
               },
               {
@@ -5523,6 +5752,7 @@
               },
               {
                 "nid": -881976567,
+                "flags": 1048576,
                 "strtype": "OBJECT/States",
                 "InheritedType": 1
               },
@@ -6825,7 +7055,7 @@
               {
                 "nid": -345912435,
                 "strtype": "LABEL/Text",
-                "strval": "0",
+                "strval": "50",
                 "InheritedType": 10
               },
               {
@@ -7090,27 +7320,7 @@
           },
           {
             "part": "lv.PART.MAIN",
-            "childs": [
-              {
-                "nid": -687102819,
-                "strtype": "_style/StyleState",
-                "strval": "DEFAULT",
-                "childs": [
-                  {
-                    "nid": -964954067,
-                    "strtype": "_style/Bg_Color",
-                    "intarray": [
-                      248,
-                      248,
-                      248,
-                      255
-                    ],
-                    "InheritedType": 7
-                  }
-                ],
-                "InheritedType": 1
-              }
-            ],
+            "childs": [],
             "nid": 1974042388,
             "strtype": "SCREEN/Style_main",
             "strval": "lv.PART.MAIN, Rectangle, Pad, Text",
@@ -7350,7 +7560,7 @@
     "depth": 2,
     "width": 480,
     "height": 320,
-    "rotation": 0,
+    "rotation": 90,
     "offset_x": 0,
     "offset_y": 0,
     "shape": "RECTANGLE",
@@ -7370,7 +7580,7 @@
     "theme_color2": 0,
     "uiExportFolderPath": "C:\\Users\\HoMeW\\Desktop\\IOS-ESP32-master\\lib\\ui",
     "projectExportFolderPath": "C:\\Users\\HoMeW\\Desktop\\IOS-ESP32-master",
-    "backup_cnt": 34,
+    "backup_cnt": 50,
     "autosave_cnt": 0,
     "lvgl_version": "8.3.6",
     "callfuncsexport": "C_FILE",

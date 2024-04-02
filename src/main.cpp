@@ -30,22 +30,6 @@
 #include <LovyanGFX.hpp>
 #include <ESP32Time.h>
 
-#include <tcs3200.h> // Include TCS3200 library
-#include <bits/stdc++.h>
-#include <ESP32Servo.h>
-
-using namespace std;
-
-Servo servoRed;   // Servo motor for red pepper
-Servo servoGreen; // Servo motor for green pepper
-
-tcs3200 tcs(2, 4, 5, 18, 22); // (S0, S1, S2, S3, output pin)
-
-double h = 0;     // Initialize H value
-double h_sum = 0; // Initialize sum of H values
-int h_count = 0;  // Initialize count of H values
-
-void rgb_to_hsv(double r, double g, double b);
 
 #ifdef PLUS
 #define SCR 30
@@ -275,7 +259,10 @@ static lv_color_t disp_draw_buf2[screenWidth * SCR];
 // lv_img_dsc_t digits[10] = {ui_img_zero_64_png, ui_img_one_64_png, ui_img_two_64_png, ui_img_three_64_png, ui_img_four_64_png,
 //                            ui_img_five_64_png, ui_img_six_64_png, ui_img_seven_64_png, ui_img_eight_64_png, ui_img_nine_64_png};
 
+
 ESP32Time rtc;
+
+
 
 /* Display flushing */
 void my_disp_flush(lv_disp_drv_t *disp, const lv_area_t *area, lv_color_t *color_p)
@@ -309,7 +296,9 @@ void my_touchpad_read(lv_indev_drv_t *indev_driver, lv_indev_data_t *data)
     data->point.x = touchX;
     data->point.y = touchY;
   }
+
 }
+
 
 void onBrightnessChange(lv_event_t *e)
 {
@@ -320,14 +309,14 @@ void onBrightnessChange(lv_event_t *e)
 
 void setup()
 {
-  Serial.begin(115200);
+   pinMode(33, OUTPUT); 
 
-  servoRed.attach(13);   // Attach the servo motor for red pepper to pin 9
-  servoGreen.attach(12); // Attach the servo motor for green pepper to pin 10
+  Serial.begin(115200);
 
   tft.init();
   tft.initDMA();
   tft.startWrite();
+
 
   lv_init();
   Serial.print("Width: ");
@@ -366,11 +355,12 @@ void setup()
 
     Serial.println("Setup done");
   }
+
 }
 
 void loop()
 {
   lv_timer_handler(); /* let the GUI do its work */
   delay(5);
-}
 
+}

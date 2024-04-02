@@ -78,3 +78,11 @@ def humiditystatustext(event_struct):
 def FanDisplay(event_struct):
     return
 
+
+def setSpeed(event_struct):
+    return
+
+
+def setOnOff(event_struct):
+    return
+
