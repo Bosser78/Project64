@@ -2,7 +2,7 @@
 
 int onOffStage;
 int speed;	   // รับค่าความเร็วปัจจุบันจากสไลด์เดอร์
-int mappspeed ; // แม็ปค่าความเร็วจากช่วง 0-100 เป็นช่วง 0-255
+int mappspeed = 50; // แม็ปค่าความเร็วจากช่วง 0-100 เป็นช่วง 0-255
 int map(int x, int in_min, int in_max, int out_min, int out_max)
 {
 	return (x - in_min) * (out_max - out_min) / (in_max - in_min) + out_min;
