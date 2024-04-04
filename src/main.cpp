@@ -311,6 +311,7 @@ void onBrightnessChange(lv_event_t *e)
 void setup()
 {
    pinMode(33, OUTPUT); 
+   pinMode(4, OUTPUT); 
 
   Serial.begin(115200);
 
@@ -358,10 +359,15 @@ void setup()
   }
 
 }
-
+extern int mappspeed ;
+extern int onOffStage;
 void loop()
 {
   lv_timer_handler(); /* let the GUI do its work */
   delay(5);
-
+  if (onOffStage == 1) {
+    analogWrite(4, mappspeed); // ตั้งค่าความเร็วของไฟฟ้า
+  Serial.print(mappspeed);
+  }
 }
+
