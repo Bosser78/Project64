@@ -29,7 +29,7 @@ void setOnOff(lv_event_t *e)
 	{
 		onOffStage = 0; // ถ้าปุ่มถูกปิด กำหนดค่าเป็น 0
 		// lv_slider_set_value(ui_Slider1, 0, LV_ANIM_ON); // ตั้งค่าสไลด์เป็น 0 (ปิด) เมื่อปิดไฟ
-		analogWrite(4, 0); // ปิดไฟ
+		 analogWrite(12, 0); // ปิดไฟ
 	}
 }
 

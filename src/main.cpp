@@ -29,8 +29,7 @@
 #include "ui.h"
 #include <LovyanGFX.hpp>
 #include <ESP32Time.h>
-
-
+#include <tcs3200.h>
 
 #ifdef PLUS
 #define SCR 30
@@ -308,10 +307,12 @@ void onBrightnessChange(lv_event_t *e)
   tft.setBrightness(brightness);
 }
 
+tcs3200 tcs(2, 4, 33, 32, 27); // (S0, S1, S2, S3, output pin)
+
 void setup()
 {
-   pinMode(33, OUTPUT); 
-   pinMode(4, OUTPUT); 
+  
+   pinMode(12, OUTPUT); 
 
   Serial.begin(115200);
 
@@ -351,6 +352,11 @@ void setup()
     lv_indev_drv_init(&indev_drv);
     indev_drv.type = LV_INDEV_TYPE_POINTER;
     indev_drv.read_cb = my_touchpad_read;
+
+
+
+
+
     lv_indev_drv_register(&indev_drv);
 
     ui_init();
@@ -360,14 +366,71 @@ void setup()
 
 }
 extern int mappspeed ;
-extern int onOffStage;
+extern int onOffStage; 
+double red, green, blue;
+double h = 0;     // Initialize H value
+double h_sum = 0; // Initialize sum of H values
+int h_count = 0;  // Initialize count of H values
+
+void rgb_to_hsv(double r, double g, double b);
+void readtsc();
 void loop()
 {
-  lv_timer_handler(); /* let the GUI do its work */
+  readtsc();
+      lv_timer_handler(); /* let the GUI do its work */
   delay(5);
   if (onOffStage == 1) {
-    analogWrite(4, mappspeed); // ตั้งค่าความเร็วของไฟฟ้า
-  Serial.print(mappspeed);
+    analogWrite(12, mappspeed); // ตั้งค่าความเร็วของไฟฟ้า
+  Serial.println(mappspeed);
+  Serial.print(red);
+  Serial.print("H= ");
+  Serial.print(h);
+  Serial.print("    ");
+  Serial.println();
   }
+
+
+
+
 }
 
+void readtsc(){
+    red = tcs.colorRead('r');   // reads color value for red
+  green = tcs.colorRead('g'); // reads color value for green
+  blue = tcs.colorRead('b');  // reads color value for blue
+   rgb_to_hsv(red, green, blue);
+}
+
+
+void rgb_to_hsv(double r, double g, double b)
+{
+  // R, G, B values are divided by 255
+  // to change the range from 0..255 to 0..1
+  r = r / 255.0;
+  g = g / 255.0;
+  b = b / 255.0;
+
+  // h, s, v = hue, saturation, value
+  double cmax = max(r, max(g, b)); // maximum of r, g, b
+  double cmin = min(r, min(g, b)); // minimum of r, g, b
+  double diff = cmax - cmin;       // diff of cmax and cmin.
+
+  // if cmax and cmax are equal then h = 0
+  if (cmax == cmin)
+    h = 0;
+
+  // if cmax equal r then compute h
+  else if (cmax == r)
+    h = fmod(60 * ((g - b) / diff) + 360, 360);
+
+  // if cmax equal g then compute h
+  else if (cmax == g)
+    h = fmod(60 * ((b - r) / diff) + 120, 360);
+
+  // if cmax equal b then compute h
+  else if (cmax == b)
+    h = fmod(60 * ((r - g) / diff) + 240, 360);
+
+
+  delay(50);
+}
