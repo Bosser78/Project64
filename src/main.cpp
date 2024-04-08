@@ -376,7 +376,7 @@ void rgb_to_hsv(double r, double g, double b);
 void readtsc();
 void loop()
 {
-  readtsc();
+   readtsc();
       lv_timer_handler(); /* let the GUI do its work */
   delay(5);
   if (onOffStage == 1) {
