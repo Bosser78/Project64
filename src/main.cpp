@@ -382,7 +382,7 @@ void readtsc();
 void loop()
 {
   //  readtsc();
-  readobj();
+  // readobj();
       lv_timer_handler(); /* let the GUI do its work */
   delay(5);
   if (onOffStage == 1) {
