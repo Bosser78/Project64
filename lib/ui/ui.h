@@ -52,7 +52,8 @@ extern lv_obj_t * ui_Label11;
 extern lv_obj_t * ui_Label12;
 extern lv_obj_t * ui_speed;
 extern lv_obj_t * ui____initial_actions0;
-
+void ui_event_Button2(lv_event_t *e);
+extern lv_obj_t *ui_Button2;
 
 LV_IMG_DECLARE(ui_img_eight_32_png);    // assets/eight_32.png
 LV_IMG_DECLARE(ui_img_eight_64_png);    // assets/eight_64.png

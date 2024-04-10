@@ -30,6 +30,7 @@
 #include <LovyanGFX.hpp>
 #include <ESP32Time.h>
 #include <tcs3200.h>
+#include <ESP32Servo.h>
 
 #ifdef PLUS
 #define SCR 30
@@ -308,18 +309,18 @@ void onBrightnessChange(lv_event_t *e)
 }
 
 tcs3200 tcs(2, 4, 33, 32, 27); // (S0, S1, S2, S3, output pin)
-
+Servo servo;
 void setup()
 {
-  
-   pinMode(12, OUTPUT); 
 
+  // pinMode(14, INPUT);
+  pinMode(12, OUTPUT);
+  servo.attach(12);
   Serial.begin(115200);
 
   tft.init();
   tft.initDMA();
   tft.startWrite();
-
 
   lv_init();
   Serial.print("Width: ");
@@ -371,12 +372,17 @@ double red, green, blue;
 double h = 0;     // Initialize H value
 double h_sum = 0; // Initialize sum of H values
 int h_count = 0;  // Initialize count of H values
-
+int pwm_count = 0;  // ต้องทำค่าให้เข้ากับความเร็ว
+int input ;
+double h_avg ;
+int output ;
+int servoposition ;
 void rgb_to_hsv(double r, double g, double b);
 void readtsc();
 void loop()
 {
-   readtsc();
+  //  readtsc();
+  readobj();
       lv_timer_handler(); /* let the GUI do its work */
   delay(5);
   if (onOffStage == 1) {
@@ -432,5 +438,69 @@ void rgb_to_hsv(double r, double g, double b)
     h = fmod(60 * ((r - g) / diff) + 240, 360);
 
 
-  delay(50);
+
 }
+
+void checkcolor (){
+  if ((240 <= h && h <= 301))// สีพื้น 
+  {
+    Serial.println("not obj");
+   }
+   else if ((240 >= h || h >= 301))
+   {
+     h_sum += h;
+     h_count++;
+     
+   }
+
+   if (pwm_count == h_count)
+   {
+     h_avg = h_sum / h_count;
+
+     if (h_avg >= 310 && h_avg <= 355)
+     {
+       Serial.println("Red");
+       servo.write(120); // Rotate servo for red pepper to 120 degrees ส่วนในการตั้งค่ารอ
+       output = 1 ;
+       servoposition = 120;
+     }
+     else if (h_avg >= 12 && h_avg <= 60)
+     {
+       Serial.println("Green");
+       servo.write(0); // Rotate servo for green pepper to 120 degrees
+       output = 2;
+       servoposition = 0 ;
+     }
+     else
+     {
+       Serial.println("Not");
+       servo.write(90); // Rotate servo for green pepper to 120 degrees
+       output = 3;      // จะพิจารณาตัดทิ้งเพราะใช้servopositionได้
+       servoposition = 90;
+     }
+
+
+   }
+}
+
+void servoslite (){
+  if (digitalRead(14)){
+    switch (output)
+    {
+    case 1:
+      servo.write(90);
+      break;
+    case 2:
+      servo.write(120);
+      break;
+    case 3:
+      servo.write(servoposition);
+      break;
+    default:
+      // statements
+    }
+  }
+}
+// void readobj (){
+//    input = digitalRead(14);
+// }

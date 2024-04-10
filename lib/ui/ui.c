@@ -46,6 +46,8 @@ lv_obj_t * ui_Label11;
 lv_obj_t * ui_Label12;
 lv_obj_t * ui_speed;
 lv_obj_t * ui____initial_actions0;
+void ui_event_Button2(lv_event_t *e);
+lv_obj_t *ui_Button2;
 const lv_img_dsc_t * ui_imgset_eight_[2] = {&ui_img_eight_32_png, &ui_img_eight_64_png};
 const lv_img_dsc_t * ui_imgset_five_[1] = {&ui_img_five_64_png};
 const lv_img_dsc_t * ui_imgset_four_[1] = {&ui_img_four_64_png};
@@ -161,6 +163,26 @@ void ui_event_Slider1(lv_event_t * e)
     }
 }
 
+int st = 0;
+
+void ui_event_Button2(lv_event_t *e)
+{
+    lv_event_code_t event_code = lv_event_get_code(e);
+    lv_obj_t *target = lv_event_get_target(e);
+    if (event_code == LV_EVENT_CLICKED)
+    {
+        if (st == 0)
+        {
+            lv_obj_set_style_bg_color(ui_Button2, lv_color_hex(0xFF0000), LV_STATE_DEFAULT);
+            st = 1;
+        }
+        else
+        {
+            lv_obj_set_style_bg_color(ui_Button2, lv_color_hex(0x0000FF), LV_STATE_DEFAULT);
+            st = 0;
+        }
+    }
+}
 ///////////////////// SCREENS ////////////////////
 
 void ui_init(void)
