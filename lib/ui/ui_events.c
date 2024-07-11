@@ -2,7 +2,8 @@
 
 int onOffStage;
 int speed;	   // รับค่าความเร็วปัจจุบันจากสไลด์เดอร์
-int mappspeed = 50; // แม็ปค่าความเร็วจากช่วง 0-100 เป็นช่วง 0-255
+int mappspeed1 = 40; // แม็ปค่าความเร็วจากช่วง 0-100 เป็นช่วง 0-255
+int mappspeed2 = 40; // แม็ปค่าความเร็วจากช่วง 0-100 เป็นช่วง 0-255
 int map(int x, int in_min, int in_max, int out_min, int out_max)
 {
 	return (x - in_min) * (out_max - out_min) / (in_max - in_min) + out_min;
@@ -41,7 +42,8 @@ void setSpeed(lv_event_t *e)
 
 			speed = lv_slider_get_value(ui_Slider1);
 
-		mappspeed = map(speed, 0, 100, 0, 255);						   // ถ้าไฟเปิดอยู่
+		mappspeed1 = map(speed, 0, 100, 128, 255);						   // ถ้าไฟเปิดอยู่
+		mappspeed2 = map(speed, 0, 100, 100, 120);						   // ถ้าไฟเปิดอยู่
 		
 	
 

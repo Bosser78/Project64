@@ -260,10 +260,7 @@ static lv_color_t disp_draw_buf2[screenWidth * SCR];
 // lv_img_dsc_t digits[10] = {ui_img_zero_64_png, ui_img_one_64_png, ui_img_two_64_png, ui_img_three_64_png, ui_img_four_64_png,
 //                            ui_img_five_64_png, ui_img_six_64_png, ui_img_seven_64_png, ui_img_eight_64_png, ui_img_nine_64_png};
 
-
 ESP32Time rtc;
-
-
 
 /* Display flushing */
 void my_disp_flush(lv_disp_drv_t *disp, const lv_area_t *area, lv_color_t *color_p)
@@ -297,9 +294,7 @@ void my_touchpad_read(lv_indev_drv_t *indev_driver, lv_indev_data_t *data)
     data->point.x = touchX;
     data->point.y = touchY;
   }
-
 }
-
 
 void onBrightnessChange(lv_event_t *e)
 {
@@ -307,14 +302,15 @@ void onBrightnessChange(lv_event_t *e)
   int brightness = (int)lv_slider_get_value(slider);
   tft.setBrightness(brightness);
 }
-
-tcs3200 tcs(2, 4, 33, 32, 27); // (S0, S1, S2, S3, output pin)
+tcs3200 tcs(5, 33, 32, 27, 25);
+//tcs3200 tcs(2, 4, 33, 32, 27);  (S0, S1, S2, S3, output pin)
 Servo servo;
 void setup()
 {
 
-  // pinMode(14, INPUT);
+  // pinMode(15, INPUT);
   pinMode(12, OUTPUT);
+ // pinMode(14, OUTPUT);
   servo.attach(12);
   Serial.begin(115200);
 
@@ -354,59 +350,54 @@ void setup()
     indev_drv.type = LV_INDEV_TYPE_POINTER;
     indev_drv.read_cb = my_touchpad_read;
 
-
-
-
-
     lv_indev_drv_register(&indev_drv);
 
     ui_init();
 
     Serial.println("Setup done");
   }
-
 }
-extern int mappspeed ;
-extern int onOffStage; 
+extern int mappspeed1,mappspeed2;
+extern int onOffStage;
 double red, green, blue;
-double h = 0;     // Initialize H value
-double h_sum = 0; // Initialize sum of H values
-int h_count = 0;  // Initialize count of H values
-int pwm_count = 0;  // ต้องทำค่าให้เข้ากับความเร็ว
-int input ;
-double h_avg ;
-int output ;
-int servoposition ;
+double h = 0;      // Initialize H value
+double h_sum = 0;  // Initialize sum of H values
+int h_count = 0;   // Initialize count of H values
+// int pwm_count = 0; // ต้องทำค่าให้เข้ากับความเร็ว
+int input;
+double h_avg;
+int output;
+int servoposition;
 void rgb_to_hsv(double r, double g, double b);
 void readtsc();
 void loop()
 {
-  //  readtsc();
-  // readobj();
-      lv_timer_handler(); /* let the GUI do its work */
-  delay(5);
-  if (onOffStage == 1) {
-    analogWrite(12, mappspeed); // ตั้งค่าความเร็วของไฟฟ้า
-  Serial.println(mappspeed);
-  Serial.print(red);
-  Serial.print("H= ");
-  Serial.print(h);
-  Serial.print("    ");
-  Serial.println();
+    readtsc();
+   // readobj();
+    delay(5);
+    lv_timer_handler(); /* let the GUI do its work */
+    if (onOffStage == 0)
+    {
+      analogWrite(2, mappspeed1); // ตั้งค่าความเร็วของไฟฟ้า
+      analogWrite(4, mappspeed2); // ตั้งค่าความเร็วของไฟฟ้า
+      Serial.println(mappspeed1);
+      Serial.println(mappspeed2);
+      Serial.print(red);
+      Serial.print(input);
+      Serial.print("H= ");
+      Serial.print(h);
+      Serial.print("    ");
+      Serial.println();
   }
-
-
-
-
 }
 
-void readtsc(){
-    red = tcs.colorRead('r');   // reads color value for red
+void readtsc()
+{
+  red = tcs.colorRead('r');   // reads color value for red
   green = tcs.colorRead('g'); // reads color value for green
   blue = tcs.colorRead('b');  // reads color value for blue
-   rgb_to_hsv(red, green, blue);
+  rgb_to_hsv(red, green, blue);
 }
-
 
 void rgb_to_hsv(double r, double g, double b)
 {
@@ -436,71 +427,75 @@ void rgb_to_hsv(double r, double g, double b)
   // if cmax equal b then compute h
   else if (cmax == b)
     h = fmod(60 * ((r - g) / diff) + 240, 360);
-
-
-
 }
 
-void checkcolor (){
-  if ((240 <= h && h <= 301))// สีพื้น 
+void checkcolor()
+{
+  if ((240 <= h && h <= 301)) // สีพื้น
   {
     Serial.println("not obj");
-   }
-   else if ((240 >= h || h >= 301))
-   {
-     h_sum += h;
-     h_count++;
-     
-   }
+  }
+  else if ((240 >= h || h >= 301))
+  {
+    h_sum += h;
+    h_count++;
+  }
 
-   if (pwm_count == h_count)
+
+
+
+
+
+   if (((90 - mappspeed1 )/10) == h_count)
    {
      h_avg = h_sum / h_count;
 
-     if (h_avg >= 310 && h_avg <= 355)
-     {
-       Serial.println("Red");
-       servo.write(120); // Rotate servo for red pepper to 120 degrees ส่วนในการตั้งค่ารอ
-       output = 1 ;
-       servoposition = 120;
-     }
-     else if (h_avg >= 12 && h_avg <= 60)
-     {
-       Serial.println("Green");
-       servo.write(0); // Rotate servo for green pepper to 120 degrees
-       output = 2;
-       servoposition = 0 ;
-     }
-     else
-     {
-       Serial.println("Not");
-       servo.write(90); // Rotate servo for green pepper to 120 degrees
-       output = 3;      // จะพิจารณาตัดทิ้งเพราะใช้servopositionได้
-       servoposition = 90;
-     }
-
-
-   }
-}
-
-void servoslite (){
-  if (digitalRead(14)){
-    switch (output)
+    if (h_avg >= 310 && h_avg <= 355)
     {
-    case 1:
-      servo.write(90);
-      break;
-    case 2:
-      servo.write(120);
-      break;
-    case 3:
-      servo.write(servoposition);
-      break;
-    default:
-      // statements
+      Serial.println("Red");
+      servo.write(120); // Rotate servo for red pepper to 120 degrees ส่วนในการตั้งค่ารอ
+      output = 1;
+      servoposition = 120;
+    }
+    else if (h_avg >= 12 && h_avg <= 60)
+    {
+      Serial.println("Green");
+      servo.write(0); // Rotate servo for green pepper to 120 degrees
+      output = 2;
+      servoposition = 0;
+    }
+    else
+    {
+      Serial.println("Not");
+      servo.write(90); // Rotate servo for green pepper to 120 degrees
+      output = 3;      // จะพิจารณาตัดทิ้งเพราะใช้servopositionได้
+      servoposition = 90;
     }
   }
 }
-// void readobj (){
-//    input = digitalRead(14);
+
+void readobj (){
+   input = digitalRead(15);
+}
+
+
+
+
+// void servoslite (){
+//   if (digitalRead(14)){
+//     switch (output)
+//     {
+//     case 1:
+//       servo.write(90);
+//       break;
+//     case 2:
+//       servo.write(120);
+//       break;
+//     case 3:
+//       servo.write(servoposition);
+//       break;
+//     default:
+//       // statements
+//     }
+//   }
 // }
