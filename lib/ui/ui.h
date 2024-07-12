@@ -25,6 +25,7 @@ void ui_event_Panel2(lv_event_t * e);
 extern lv_obj_t * ui_Panel2;
 extern lv_obj_t * ui_Panel1;
 extern lv_obj_t * ui_Label2;
+extern lv_obj_t *ui_Image1;
 // SCREEN: ui_Screen2
 void ui_Screen2_screen_init(void);
 extern lv_obj_t * ui_Screen2;
@@ -67,8 +68,7 @@ LV_IMG_DECLARE(ui_img_six_64_png);    // assets/six_64.png
 LV_IMG_DECLARE(ui_img_three_64_png);    // assets/three_64.png
 LV_IMG_DECLARE(ui_img_two_64_png);    // assets/two_64.png
 LV_IMG_DECLARE(ui_img_zero_64_png);    // assets/zero_64.png
-
-
+LV_IMG_DECLARE(ui_img_2040832490);     // assets/zero_64.png
 
 LV_FONT_DECLARE(ui_font_Font1);
 LV_FONT_DECLARE(ui_font_Font2);

@@ -17,7 +17,7 @@ void ui_event_Panel2(lv_event_t * e);
 lv_obj_t * ui_Panel2;
 lv_obj_t * ui_Panel1;
 lv_obj_t * ui_Label2;
-
+lv_obj_t *ui_Image1;
 
 // SCREEN: ui_Screen2
 void ui_Screen2_screen_init(void);

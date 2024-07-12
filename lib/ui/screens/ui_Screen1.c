@@ -40,6 +40,16 @@ void ui_Screen1_screen_init(void)
     lv_obj_set_style_text_decor(ui_Label2, LV_TEXT_DECOR_NONE, LV_PART_MAIN | LV_STATE_DEFAULT);
     lv_obj_set_style_text_font(ui_Label2, &ui_font_Font1, LV_PART_MAIN | LV_STATE_DEFAULT);
 
+    ui_Image1 = lv_img_create(ui_Screen1);
+    lv_img_set_src(ui_Image1, &ui_img_2040832490);
+    lv_obj_set_width(ui_Image1, LV_SIZE_CONTENT);  /// 128
+    lv_obj_set_height(ui_Image1, LV_SIZE_CONTENT); /// 128
+    lv_obj_set_x(ui_Image1, 0);
+    lv_obj_set_y(ui_Image1, -58);
+    lv_obj_set_align(ui_Image1, LV_ALIGN_CENTER);
+    lv_obj_add_flag(ui_Image1, LV_OBJ_FLAG_ADV_HITTEST); /// Flags
+    lv_obj_clear_flag(ui_Image1, LV_OBJ_FLAG_SCROLLABLE);
+
     lv_obj_add_event_cb(ui_Panel2, ui_event_Panel2, LV_EVENT_ALL, NULL);
 
 }

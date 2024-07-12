@@ -377,8 +377,7 @@ void checkcolor();
 void servoslite();
 void loop()
 {
-  if (onOffStage == 1)
-  {
+ 
   readtsc();
   delay(5);
 
@@ -392,7 +391,8 @@ void loop()
   delay(5);
 
   lv_timer_handler(); /* let the GUI do its work */
-  
+  if (onOffStage == 1)
+  {
     // analogWrite(2, mappspeed1); // ตั้งค่าความเร็วของไฟฟ้า
     // analogWrite(4, mappspeed2); // ตั้งค่าความเร็วของไฟฟ้า
     Serial.println(mappspeed1);
