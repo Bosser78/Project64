@@ -17,22 +17,22 @@ void toggleLED(lv_event_t *e)
 	// delay(1000);
 }
 
-void setOnOff(lv_event_t *e)
-{
-	if (lv_obj_has_state(ui_BTNpower, LV_STATE_CHECKED))
-	{
-		onOffStage = 1;									 // ถ้าปุ่มถูกเปิด กำหนดค่าเป็น 1
-		// lv_slider_set_value(ui_Slider1, 50, LV_ANIM_ON); // ตั้งค่าสไลด์ให้มีค่าเป็น 50 เมื่อเปิดระบบใหม่
-		// mappspeed = 50;
+// void setOnOff(lv_event_t *e)
+// {
+// 	if (lv_obj_has_state(ui_BTNpower, LV_STATE_CHECKED))
+// 	{
+// 		onOffStage = 1;									 // ถ้าปุ่มถูกเปิด กำหนดค่าเป็น 1
+// 		// lv_slider_set_value(ui_Slider1, 50, LV_ANIM_ON); // ตั้งค่าสไลด์ให้มีค่าเป็น 50 เมื่อเปิดระบบใหม่
+// 		// mappspeed = 50;
 		
-	}
-	else
-	{
-		onOffStage = 0; // ถ้าปุ่มถูกปิด กำหนดค่าเป็น 0
-		// lv_slider_set_value(ui_Slider1, 0, LV_ANIM_ON); // ตั้งค่าสไลด์เป็น 0 (ปิด) เมื่อปิดไฟ
-		 //analogWrite(12, 0); // ปิดไฟ
-	}
-}
+// 	}
+// 	else
+// 	{
+// 		onOffStage = 0; // ถ้าปุ่มถูกปิด กำหนดค่าเป็น 0
+// 		// lv_slider_set_value(ui_Slider1, 0, LV_ANIM_ON); // ตั้งค่าสไลด์เป็น 0 (ปิด) เมื่อปิดไฟ
+// 		 //analogWrite(12, 0); // ปิดไฟ
+// 	}
+// }
 
 void setSpeed(lv_event_t *e)
 {

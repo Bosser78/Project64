@@ -144,7 +144,7 @@ void ui_event_BTNpower(lv_event_t *e)
         }
         else
         {
-            setOnOff(e);
+            // setOnOff(e);
             _ui_label_set_property(ui_LabelOnOff, _UI_LABEL_PROPERTY_TEXT, "ปิด");
             _ui_switch_theme(UI_THEME_DEFAULT);
             onOffStage = 0;
