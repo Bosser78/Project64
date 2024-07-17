@@ -377,32 +377,41 @@ void checkcolor();
 void servoslite();
 void loop()
 {
- 
-  readtsc();
-  delay(5);
-
-  checkcolor();
-  delay(5);
-
-  readobj();
-  delay(5);
-
-  servoslite();
-  delay(5);
-
   lv_timer_handler(); /* let the GUI do its work */
   if (onOffStage == 1)
   {
+    readtsc();
+    delay(5);
+
+    checkcolor();
+    delay(5);
+
+    readobj();
+    delay(5);
+
+    servoslite();
+    delay(5);
+
     // analogWrite(2, mappspeed1); // ตั้งค่าความเร็วของไฟฟ้า
     // analogWrite(4, mappspeed2); // ตั้งค่าความเร็วของไฟฟ้า
-    Serial.println(mappspeed1);
-    Serial.println(mappspeed2);
-    Serial.print(red);
+    Serial.print(mappspeed1);
+    Serial.print("    ");
+
+    Serial.print(mappspeed2);
+    Serial.print("    ");
+
+    Serial.print("input =");
     Serial.print(input);
     Serial.print("H= ");
     Serial.print(h);
     Serial.print("    ");
-    Serial.println();
+    Serial.println(round(map(speed, 0, 100, 7, 20)));
+    Serial.print("Havg= ");
+    Serial.print(h_avg);
+    Serial.print("H= ");
+    Serial.print(h_count);
+    Serial.print("Hsum= ");
+    Serial.print(h_sum);
   }
 }
 
@@ -446,16 +455,16 @@ void rgb_to_hsv(double r, double g, double b)
 
 void checkcolor()
 {
-  if ((240 <= h && h <= 301)) // สีพื้น
+  if ((160 <= h && h <= 260)) // สีพื้น
   {
     analogWrite(2, mappspeed1); // ตั้งค่าความเร็วของไฟฟ้า
     analogWrite(4, mappspeed2); // ตั้งค่าความเร็วของไฟฟ้า
     Serial.println("not obj");
   }
-  else if ((240 >= h || h >= 301))
+  else if ((159 >= h || h >= 261))
   {
-    analogWrite(2, 0); // ตั้งค่าความเร็วของไฟฟ้า
-    analogWrite(4, 0); // ตั้งค่าความเร็วของไฟฟ้า
+    analogWrite(2, 120);        // ตั้งค่าความเร็วของไฟฟ้า
+    analogWrite(4, mappspeed2); // ตั้งค่าความเร็วของไฟฟ้า
     h_sum += h;
     h_count++;
   }
@@ -464,27 +473,36 @@ void checkcolor()
   {
     h_avg = h_sum / h_count;
 
-    if (h_avg >= 310 && h_avg <= 355)
+    if (h_avg >= 200 && h_avg <= 355)
     {
-      // Serial.println("Red");
+      Serial.println("Red");
       // servo.write(120); // Rotate servo for red pepper to 120 degrees ส่วนในการตั้งค่ารอ
       output = 1;
+      // h_count = 0;
+      h_avg = 0;
       // servoposition = 120;
     }
-    else if (h_avg >= 12 && h_avg <= 60)
+    else if (h_avg >= 12 && h_avg <= 150)
     {
-      // Serial.println("Green");
+      Serial.println("Green");
       // servo.write(0); // Rotate servo for green pepper to 120 degrees
       output = 2;
+      // h_count = 0;
+      h_avg = 0;
+
       // servoposition = 0;
     }
     else
     {
-      // Serial.println("Not");
+      Serial.println("Not");
       // servo.write(90); // Rotate servo for green pepper to 120 degrees
       output = 3; // จะพิจารณาตัดทิ้งเพราะใช้servopositionได้
       // servoposition = 90;
+      // h_count = 0;
+      h_avg = 0;
     }
+    h_sum = 0;
+    h_count = 0;
     // เลื่อนค่าในอาเรย์
     for (int i = 3; i > 0; i--) // for (int i = MAX_CHILI - 1; i > 0; i--)
     {
@@ -496,7 +514,9 @@ void checkcolor()
 
 void readobj()
 {
-  input = digitalRead(15);
+  // input = 0 ;
+  //   input = analogRead(35);
+  input = digitalRead(35);
 }
 
 void servoslite()
