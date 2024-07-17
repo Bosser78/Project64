@@ -139,14 +139,14 @@ void ui_event_BTNpower(lv_event_t *e)
         if (onOffStage == 0)
         {
             _ui_label_set_property(ui_LabelOnOff, _UI_LABEL_PROPERTY_TEXT, "เปิด");
-            _ui_switch_theme(UI_THEME_DEFAULT);
+            _ui_switch_theme(UI_THEME_STOP);
             onOffStage = 1;
         }
         else
         {
             setOnOff(e);
             _ui_label_set_property(ui_LabelOnOff, _UI_LABEL_PROPERTY_TEXT, "ปิด");
-            _ui_switch_theme(UI_THEME_STOP);
+            _ui_switch_theme(UI_THEME_DEFAULT);
             onOffStage = 0;
         }
     }

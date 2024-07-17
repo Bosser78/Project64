@@ -309,6 +309,7 @@ Servo servo;
 int chiliArray[4] = {0}; // maxchili
 void setup()
 {
+  pinMode(35, INPUT_PULLUP);
 
   // pinMode(15, INPUT);
   pinMode(12, OUTPUT);
@@ -380,17 +381,17 @@ void loop()
   lv_timer_handler(); /* let the GUI do its work */
   if (onOffStage == 1)
   {
-    readtsc();
-    delay(5);
+    // readtsc();
+    // delay(5);
 
-    checkcolor();
-    delay(5);
+    // checkcolor();
+    // delay(5);
 
-    readobj();
-    delay(5);
+    // readobj();
+    // delay(5);
 
-    servoslite();
-    delay(5);
+    // servoslite();
+    // delay(5);
 
     // analogWrite(2, mappspeed1); // ตั้งค่าความเร็วของไฟฟ้า
     // analogWrite(4, mappspeed2); // ตั้งค่าความเร็วของไฟฟ้า
