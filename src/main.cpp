@@ -309,7 +309,7 @@ Servo servo;
 int chiliArray[4] = {0}; // maxchili
 #define RED_CHILI 1
 #define GREEN_CHILI 2
-#define EMPTY 0
+#define EMPTY 3
 void setup()
 {
   pinMode(35, INPUT_PULLUP);
@@ -420,37 +420,257 @@ void rgb_to_hsv(double r, double g, double b)
 }
 
 unsigned long lastTimeChecked = 0;
-unsigned long captureDuration = 800; // 0.5 วินาที
+unsigned long startTimeChili = 0;
+unsigned long captureDuration = 500;  // 0.5 วินาที
+unsigned long captureDuration1 = 200; // 0.2 วินาที
 bool capturing = false;
 
 void checkchii()
 {
   if (capturing)
   {
-    if ((h > 260 || h < 170))
+    analogWrite(2, 120);        // ตั้งค่าความเร็วของไฟฟ้า
+    analogWrite(4, mappspeed2); // ตั้งค่าความเร็วของไฟฟ้า
+    if ((h > 260 || h < 170))   // ตรวจเฉพาะสี
+    // if (millis() - lastTimeChecked < captureDuration)//ตรวจทุกช่วงสีในเวลา
     {
-      h_sum += h;
-      h_count++;
-      lastTimeChecked = millis(); // อัพเดทเวลาเมื่อเจอค่าที่ตรงกับเงื่อนไข
+      if (startTimeChili == 0)
+      {
+        startTimeChili = millis(); // บันทึกเวลาเริ่มต้นที่พบพริก
+      }
+      else if (millis() - startTimeChili > captureDuration1)
+      {
+        Serial.println("true obj");
+        h_sum += h;
+        h_count++;
+        lastTimeChecked = millis(); // อัพเดทเวลาเมื่อเจอค่าที่ตรงกับเงื่อนไข
+      }
     }
-    else if (millis() - lastTimeChecked > captureDuration)
+    else
     {
-      capturing = false; // หยุดเก็บค่าถ้าเวลาเกิน 0.5 วินาที
+      Serial.println("time");
+      if (lastTimeChecked == 0)
+      {
+        lastTimeChecked = millis(); // บันทึกเวลาเริ่มต้นที่พบพริก
+      }
+
+      // รีเซ็ตเวลาเริ่มต้นที่พบพริกถ้าค่า h ไม่ตรงตามเงื่อนไข
+      else if (millis() - lastTimeChecked > captureDuration) // พริกตรวจไม่เจอกี่วิ
+      {
+        startTimeChili = millis();
+        // startTimeChili = 0;
+        Serial.println("time out");
+        capturing = false; // หยุดเก็บค่าถ้าเวลาเกิน 0.5 วินาที
+                           // lastTimeChecked = millis(); // อัพเดทเวลาเมื่อไม่เจอค่าที่ตรงกับเงื่อนไข
+                           // อัพเดทเวลาเมื่อไม่เจอค่าที่ตรงกับเงื่อนไข
+      }
     }
   }
   else
   {
-    analogWrite(2, 120);        // ตั้งค่าความเร็วของไฟฟ้า
+    analogWrite(2, mappspeed1); // ตั้งค่าความเร็วของไฟฟ้า
     analogWrite(4, mappspeed2); // ตั้งค่าความเร็วของไฟฟ้า
     Serial.println("not obj");
     if ((h > 260 || h < 170))
     {
+      startTimeChili = 0;
+      capturing = true;
+      // lastTimeChecked = millis(); // เริ่มเก็บค่าใหม่
+      lastTimeChecked = 0 // เริ่มเก็บค่าใหม่
+    }
+  }
+
+  if (capturing == false && h_count > 0)
+  {
+    h_avg = h_sum / h_count;
+
+    if (h_avg >= 260 && h_avg <= 355)
+    {
+      Serial.println("Red");
+      output = 1;
+      h_avg = 0;
+      for (int i = 3; i > 0; i--)
+      {
+        chiliArray[i] = chiliArray[i - 1];
+      }
+      chiliArray[0] = 1; // เพิ่มค่าพริกแดงในตำแหน่งแรก
+    }
+    else if (h_avg >= 12 && h_avg <= 50)
+    {
+      Serial.println("Green");
+      output = 2;
+      h_avg = 0;
+
+      for (int i = 3; i > 0; i--)
+      {
+        chiliArray[i] = chiliArray[i - 1];
+      }
+      chiliArray[0] = 2; // เพิ่มค่าพริกเขียวในตำแหน่งแรก
+    }
+    else
+    {
+      Serial.println("Not");
+      output = 3;
+      h_avg = 0;
+
+      for (int i = 3; i > 0; i--)
+      {
+        chiliArray[i] = chiliArray[i - 1];
+      }
+      chiliArray[0] = 3; // เพิ่มค่าพริกเขียวในตำแหน่งแรก
+    }
+
+    // รีเซ็ตค่าเพื่อเก็บค่าใหม่ในครั้งต่อไป
+    h_sum = 0;
+    h_count = 0;
+  }
+}
+
+void checkchii2()
+{
+  if (capturing)
+  {
+    analogWrite(2, 120);        // ตั้งค่าความเร็วของไฟฟ้า
+    analogWrite(4, mappspeed2); // ตั้งค่าความเร็วของไฟฟ้า
+    if ((h > 260 || h < 170))   // ตรวจเฉพาะสี
+    // if (millis() - lastTimeChecked < captureDuration)//ตรวจทุกช่วงสีในเวลา
+    {
+      if (startTimeChili == 0)
+      {
+        startTimeChili = millis(); // บันทึกเวลาเริ่มต้นที่พบพริก
+      }
+      else if (millis() - startTimeChili > captureDuration1)
+      {
+        Serial.println("true obj");
+        h_sum += h;
+        h_count++;
+        lastTimeChecked = millis(); // อัพเดทเวลาเมื่อเจอค่าที่ตรงกับเงื่อนไข
+      }
+    }
+    else
+    {
+      Serial.println("time");
+      if (lastTimeChecked == 0)
+      {
+        lastTimeChecked = millis(); // บันทึกเวลาเริ่มต้นที่พบพริก
+      }
+
+      // รีเซ็ตเวลาเริ่มต้นที่พบพริกถ้าค่า h ไม่ตรงตามเงื่อนไข
+      else if (millis() - lastTimeChecked > captureDuration) // พริกตรวจไม่เจอกี่วิ
+      {
+        // startTimeChili = 0;
+        Serial.println("time out");
+        capturing = false; // หยุดเก็บค่าถ้าเวลาเกิน 0.5 วินาที
+      }
+      // lastTimeChecked = millis(); // อัพเดทเวลาเมื่อไม่เจอค่าที่ตรงกับเงื่อนไข
+      startTimeChili = millis(); // อัพเดทเวลาเมื่อไม่เจอค่าที่ตรงกับเงื่อนไข
+    }
+  }
+  else
+  {
+    analogWrite(2, mappspeed1); // ตั้งค่าความเร็วของไฟฟ้า
+    analogWrite(4, mappspeed2); // ตั้งค่าความเร็วของไฟฟ้า
+    Serial.println("not obj");
+    if ((h > 260 || h < 170))
+    {
+      startTimeChili = 0;
       capturing = true;
       lastTimeChecked = millis(); // เริ่มเก็บค่าใหม่
     }
   }
 
-  if (capturing == false && h_count > 5)
+  if (capturing == false && h_count > 0)
+  {
+    h_avg = h_sum / h_count;
+
+    if (h_avg >= 260 && h_avg <= 355)
+    {
+      Serial.println("Red");
+      output = 1;
+      h_avg = 0;
+      for (int i = 3; i > 0; i--)
+      {
+        chiliArray[i] = chiliArray[i - 1];
+      }
+      chiliArray[0] = 1; // เพิ่มค่าพริกแดงในตำแหน่งแรก
+    }
+    else if (h_avg >= 12 && h_avg <= 50)
+    {
+      Serial.println("Green");
+      output = 2;
+      h_avg = 0;
+
+      for (int i = 3; i > 0; i--)
+      {
+        chiliArray[i] = chiliArray[i - 1];
+      }
+      chiliArray[0] = 2; // เพิ่มค่าพริกเขียวในตำแหน่งแรก
+    }
+    else
+    {
+      Serial.println("Not");
+      output = 3;
+      h_avg = 0;
+
+      for (int i = 3; i > 0; i--)
+      {
+        chiliArray[i] = chiliArray[i - 1];
+      }
+      chiliArray[0] = 3; // เพิ่มค่าพริกเขียวในตำแหน่งแรก
+    }
+
+    // รีเซ็ตค่าเพื่อเก็บค่าใหม่ในครั้งต่อไป
+    h_sum = 0;
+    h_count = 0;
+  }
+}
+unsigned long startCaptureTime = 0; // ตัวแปรเก็บเวลาเริ่มต้นการตรวจจับพริก
+
+void checkchii111() // gpt
+{
+  if (capturing)
+  {
+    analogWrite(2, 120);        // ตั้งค่าความเร็วของไฟฟ้า
+    analogWrite(4, mappspeed2); // ตั้งค่าความเร็วของไฟฟ้า
+
+    // เก็บค่าทุกค่าในช่วงที่ตรวจจับพริกอยู่
+    h_sum += h;
+    h_count++;
+    lastTimeChecked = millis(); // อัพเดทเวลาเมื่อเจอค่าที่ตรงกับเงื่อนไข
+
+    // หากไม่เจอพริกในช่วงเวลาเกิน 0.4 วินาที
+    if (millis() - lastTimeChecked > 400)
+    {
+      Serial.println("time out");
+      capturing = false; // หยุดเก็บค่าถ้าเวลาเกิน 0.4 วินาที
+    }
+  }
+  else
+  {
+    analogWrite(2, mappspeed1); // ตั้งค่าความเร็วของไฟฟ้า
+    analogWrite(4, mappspeed2); // ตั้งค่าความเร็วของไฟฟ้า
+    Serial.println("not obj");
+
+    // ตรวจจับพริก
+    if ((h > 260 || h < 170))
+    {
+      if (startCaptureTime == 0)
+      {
+        startCaptureTime = millis(); // บันทึกเวลาเริ่มต้นเมื่อเจอพริกครั้งแรก
+      }
+      else if (millis() - startCaptureTime > 500) // ตรวจสอบเวลาหากผ่านไปมากกว่า 0.5 วินาที
+      {
+        capturing = true;
+        lastTimeChecked = millis(); // เริ่มเก็บค่าใหม่
+      }
+    }
+    else
+    {
+      startCaptureTime = 0; // รีเซ็ตเวลาเริ่มต้นหากค่าไม่ตรงเงื่อนไข
+    }
+  }
+
+  if (!capturing && h_count > 0)
   {
     float h_avg = (float)h_sum / h_count;
 
@@ -625,13 +845,13 @@ void loop()
     Serial.print(h);
     // Serial.print("    ");
     // Serial.println(round(map(speed, 0, 100, 7, 20)));
-    Serial.print("Havg= ");
-    Serial.print(h_avg);
+    // Serial.println("Havg= ");
+    // Serial.print(h_avg);
     // Serial.print("H= ");
     // Serial.print(h_count);
     // Serial.print("Hsum= ");
     // Serial.print(h_sum);
-    Serial.print("Chili Array: ");
+    Serial.println("Chili Array: ");
     for (int i = 0; i < 3; i++)
     {
       Serial.print(chiliArray[i]);
