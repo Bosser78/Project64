@@ -476,7 +476,7 @@ void checkchii()
       startTimeChili = 0;
       capturing = true;
       // lastTimeChecked = millis(); // เริ่มเก็บค่าใหม่
-      lastTimeChecked = 0 // เริ่มเก็บค่าใหม่
+      lastTimeChecked = 0; // เริ่มเก็บค่าใหม่
     }
   }
 
@@ -636,8 +636,10 @@ void checkchii111() // gpt
     // เก็บค่าทุกค่าในช่วงที่ตรวจจับพริกอยู่
     h_sum += h;
     h_count++;
-    lastTimeChecked = millis(); // อัพเดทเวลาเมื่อเจอค่าที่ตรงกับเงื่อนไข
-
+    if ((h > 260 || h < 170))
+    {
+      lastTimeChecked = millis(); // อัพเดทเวลาเมื่อเจอค่าที่ตรงกับเงื่อนไข
+    }
     // หากไม่เจอพริกในช่วงเวลาเกิน 0.4 วินาที
     if (millis() - lastTimeChecked > 400)
     {
@@ -658,7 +660,7 @@ void checkchii111() // gpt
       {
         startCaptureTime = millis(); // บันทึกเวลาเริ่มต้นเมื่อเจอพริกครั้งแรก
       }
-      else if (millis() - startCaptureTime > 500) // ตรวจสอบเวลาหากผ่านไปมากกว่า 0.5 วินาที
+      else if (millis() - startCaptureTime > 100) // ตรวจสอบเวลาหากผ่านไปมากกว่า 0.5 วินาที
       {
         capturing = true;
         lastTimeChecked = millis(); // เริ่มเก็บค่าใหม่
