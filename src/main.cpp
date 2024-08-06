@@ -30,7 +30,6 @@
 #include <LovyanGFX.hpp>
 #include <ESP32Time.h>
 #include <tcs3200.h>
-#include <ESP32Servo.h>
 
 #ifdef PLUS
 #define SCR 30
@@ -304,7 +303,7 @@ void onBrightnessChange(lv_event_t *e)
 }
 tcs3200 tcs(5, 33, 32, 27, 25);
 // tcs3200 tcs(2, 4, 33, 32, 27);  (S0, S1, S2, S3, output pin)
-Servo servo;
+// Servo myservo;
 
 int chiliArray[4] = {0}; // maxchili
 #define RED_CHILI 1
@@ -315,16 +314,18 @@ void setup()
   pinMode(35, INPUT_PULLUP);
 
   // pinMode(15, INPUT);
-  pinMode(12, OUTPUT);
-  // pinMode(14, OUTPUT);
-  servo.attach(12);
-  Serial.begin(115200);
 
+  // pinMode(14, OUTPUT);
+
+  Serial.begin(115200);
+  // myservo.attach(2);
   tft.init();
+
   tft.initDMA();
   tft.startWrite();
 
   lv_init();
+
   Serial.print("Width: ");
   Serial.print(screenWidth);
   Serial.print("\tHeight: ");
@@ -348,8 +349,8 @@ void setup()
     disp_drv.ver_res = screenHeight;
     disp_drv.flush_cb = my_disp_flush;
     disp_drv.draw_buf = &draw_buf;
-    lv_disp_drv_register(&disp_drv);
 
+    lv_disp_drv_register(&disp_drv);
     /* Initialize the input device driver */
     static lv_indev_drv_t indev_drv;
     lv_indev_drv_init(&indev_drv);
@@ -359,13 +360,13 @@ void setup()
     lv_indev_drv_register(&indev_drv);
 
     ui_init();
-    servo.write(45);
 
     Serial.println("Setup done");
   }
+  pinMode(12, OUTPUT);
 }
 extern int mappspeed1, mappspeed2, speed;
-extern int onOffStage;
+extern int onOffStage, reset, st;
 double red, green, blue;
 double h = 0;     // Initialize H value
 double h_sum = 0; // Initialize sum of H values
@@ -374,8 +375,14 @@ int h_count = 0;  // Initialize count of H values
 int input;
 double h_avg;
 int output;
-int servoposition;
+int servoposition = 0;
 void rgb_to_hsv(double r, double g, double b);
+
+int red2 = 0;
+int green2 = 0;
+int numGray2 = 0;
+
+bool objdetac = false;
 // void readtsc();
 // void readobj();
 // void checkcolor();
@@ -425,205 +432,6 @@ unsigned long captureDuration = 500;  // 0.5 วินาที
 unsigned long captureDuration1 = 200; // 0.2 วินาที
 bool capturing = false;
 
-void checkchii()
-{
-  if (capturing)
-  {
-    analogWrite(2, 120);        // ตั้งค่าความเร็วของไฟฟ้า
-    analogWrite(4, mappspeed2); // ตั้งค่าความเร็วของไฟฟ้า
-    if ((h > 260 || h < 170))   // ตรวจเฉพาะสี
-    // if (millis() - lastTimeChecked < captureDuration)//ตรวจทุกช่วงสีในเวลา
-    {
-      if (startTimeChili == 0)
-      {
-        startTimeChili = millis(); // บันทึกเวลาเริ่มต้นที่พบพริก
-      }
-      else if (millis() - startTimeChili > captureDuration1)
-      {
-        Serial.println("true obj");
-        h_sum += h;
-        h_count++;
-        lastTimeChecked = millis(); // อัพเดทเวลาเมื่อเจอค่าที่ตรงกับเงื่อนไข
-      }
-    }
-    else
-    {
-      Serial.println("time");
-      if (lastTimeChecked == 0)
-      {
-        lastTimeChecked = millis(); // บันทึกเวลาเริ่มต้นที่พบพริก
-      }
-
-      // รีเซ็ตเวลาเริ่มต้นที่พบพริกถ้าค่า h ไม่ตรงตามเงื่อนไข
-      else if (millis() - lastTimeChecked > captureDuration) // พริกตรวจไม่เจอกี่วิ
-      {
-        startTimeChili = millis();
-        // startTimeChili = 0;
-        Serial.println("time out");
-        capturing = false; // หยุดเก็บค่าถ้าเวลาเกิน 0.5 วินาที
-                           // lastTimeChecked = millis(); // อัพเดทเวลาเมื่อไม่เจอค่าที่ตรงกับเงื่อนไข
-                           // อัพเดทเวลาเมื่อไม่เจอค่าที่ตรงกับเงื่อนไข
-      }
-    }
-  }
-  else
-  {
-    analogWrite(2, mappspeed1); // ตั้งค่าความเร็วของไฟฟ้า
-    analogWrite(4, mappspeed2); // ตั้งค่าความเร็วของไฟฟ้า
-    Serial.println("not obj");
-    if ((h > 260 || h < 170))
-    {
-      startTimeChili = 0;
-      capturing = true;
-      // lastTimeChecked = millis(); // เริ่มเก็บค่าใหม่
-      lastTimeChecked = 0; // เริ่มเก็บค่าใหม่
-    }
-  }
-
-  if (capturing == false && h_count > 0)
-  {
-    h_avg = h_sum / h_count;
-
-    if (h_avg >= 260 && h_avg <= 355)
-    {
-      Serial.println("Red");
-      output = 1;
-      h_avg = 0;
-      for (int i = 3; i > 0; i--)
-      {
-        chiliArray[i] = chiliArray[i - 1];
-      }
-      chiliArray[0] = 1; // เพิ่มค่าพริกแดงในตำแหน่งแรก
-    }
-    else if (h_avg >= 12 && h_avg <= 50)
-    {
-      Serial.println("Green");
-      output = 2;
-      h_avg = 0;
-
-      for (int i = 3; i > 0; i--)
-      {
-        chiliArray[i] = chiliArray[i - 1];
-      }
-      chiliArray[0] = 2; // เพิ่มค่าพริกเขียวในตำแหน่งแรก
-    }
-    else
-    {
-      Serial.println("Not");
-      output = 3;
-      h_avg = 0;
-
-      for (int i = 3; i > 0; i--)
-      {
-        chiliArray[i] = chiliArray[i - 1];
-      }
-      chiliArray[0] = 3; // เพิ่มค่าพริกเขียวในตำแหน่งแรก
-    }
-
-    // รีเซ็ตค่าเพื่อเก็บค่าใหม่ในครั้งต่อไป
-    h_sum = 0;
-    h_count = 0;
-  }
-}
-
-void checkchii2()
-{
-  if (capturing)
-  {
-    analogWrite(2, 120);        // ตั้งค่าความเร็วของไฟฟ้า
-    analogWrite(4, mappspeed2); // ตั้งค่าความเร็วของไฟฟ้า
-    if ((h > 260 || h < 170))   // ตรวจเฉพาะสี
-    // if (millis() - lastTimeChecked < captureDuration)//ตรวจทุกช่วงสีในเวลา
-    {
-      if (startTimeChili == 0)
-      {
-        startTimeChili = millis(); // บันทึกเวลาเริ่มต้นที่พบพริก
-      }
-      else if (millis() - startTimeChili > captureDuration1)
-      {
-        Serial.println("true obj");
-        h_sum += h;
-        h_count++;
-        lastTimeChecked = millis(); // อัพเดทเวลาเมื่อเจอค่าที่ตรงกับเงื่อนไข
-      }
-    }
-    else
-    {
-      Serial.println("time");
-      if (lastTimeChecked == 0)
-      {
-        lastTimeChecked = millis(); // บันทึกเวลาเริ่มต้นที่พบพริก
-      }
-
-      // รีเซ็ตเวลาเริ่มต้นที่พบพริกถ้าค่า h ไม่ตรงตามเงื่อนไข
-      else if (millis() - lastTimeChecked > captureDuration) // พริกตรวจไม่เจอกี่วิ
-      {
-        // startTimeChili = 0;
-        Serial.println("time out");
-        capturing = false; // หยุดเก็บค่าถ้าเวลาเกิน 0.5 วินาที
-      }
-      // lastTimeChecked = millis(); // อัพเดทเวลาเมื่อไม่เจอค่าที่ตรงกับเงื่อนไข
-      startTimeChili = millis(); // อัพเดทเวลาเมื่อไม่เจอค่าที่ตรงกับเงื่อนไข
-    }
-  }
-  else
-  {
-    analogWrite(2, mappspeed1); // ตั้งค่าความเร็วของไฟฟ้า
-    analogWrite(4, mappspeed2); // ตั้งค่าความเร็วของไฟฟ้า
-    Serial.println("not obj");
-    if ((h > 260 || h < 170))
-    {
-      startTimeChili = 0;
-      capturing = true;
-      lastTimeChecked = millis(); // เริ่มเก็บค่าใหม่
-    }
-  }
-
-  if (capturing == false && h_count > 0)
-  {
-    h_avg = h_sum / h_count;
-
-    if (h_avg >= 260 && h_avg <= 355)
-    {
-      Serial.println("Red");
-      output = 1;
-      h_avg = 0;
-      for (int i = 3; i > 0; i--)
-      {
-        chiliArray[i] = chiliArray[i - 1];
-      }
-      chiliArray[0] = 1; // เพิ่มค่าพริกแดงในตำแหน่งแรก
-    }
-    else if (h_avg >= 12 && h_avg <= 50)
-    {
-      Serial.println("Green");
-      output = 2;
-      h_avg = 0;
-
-      for (int i = 3; i > 0; i--)
-      {
-        chiliArray[i] = chiliArray[i - 1];
-      }
-      chiliArray[0] = 2; // เพิ่มค่าพริกเขียวในตำแหน่งแรก
-    }
-    else
-    {
-      Serial.println("Not");
-      output = 3;
-      h_avg = 0;
-
-      for (int i = 3; i > 0; i--)
-      {
-        chiliArray[i] = chiliArray[i - 1];
-      }
-      chiliArray[0] = 3; // เพิ่มค่าพริกเขียวในตำแหน่งแรก
-    }
-
-    // รีเซ็ตค่าเพื่อเก็บค่าใหม่ในครั้งต่อไป
-    h_sum = 0;
-    h_count = 0;
-  }
-}
 unsigned long startCaptureTime = 0; // ตัวแปรเก็บเวลาเริ่มต้นการตรวจจับพริก
 
 void checkchii111() // gpt
@@ -641,7 +449,7 @@ void checkchii111() // gpt
       lastTimeChecked = millis(); // อัพเดทเวลาเมื่อเจอค่าที่ตรงกับเงื่อนไข
     }
     // หากไม่เจอพริกในช่วงเวลาเกิน 0.4 วินาที
-    if (millis() - lastTimeChecked > 400)
+    if (millis() - lastTimeChecked > 200)
     {
       Serial.println("time out");
       capturing = false; // หยุดเก็บค่าถ้าเวลาเกิน 0.4 วินาที
@@ -679,33 +487,41 @@ void checkchii111() // gpt
     if (h_avg >= 260 && h_avg <= 355)
     {
       Serial.println("Red");
-      output = 1;
 
-      for (int i = 3; i > 0; i--)
-      {
-        chiliArray[i] = chiliArray[i - 1];
+       red2++;
+       _ui_label_set_property(ui_numRed, _UI_LABEL_PROPERTY_TEXT, std::to_string(red2).c_str());
+       output = 1;
+
+       for (int i = 3; i > 0; i--)
+       {
+         chiliArray[i] = chiliArray[i - 1];
       }
       chiliArray[0] = 1; // เพิ่มค่าพริกแดงในตำแหน่งแรก
     }
     else if (h_avg >= 12 && h_avg <= 50)
     {
       Serial.println("Green");
-      output = 2;
-      for (int i = 3; i > 0; i--)
-      {
-        chiliArray[i] = chiliArray[i - 1];
+       green2++;
+       _ui_label_set_property(ui_numGreen, _UI_LABEL_PROPERTY_TEXT, std::to_string(green2).c_str());
+
+       output = 2;
+       for (int i = 3; i > 0; i--)
+       {
+         chiliArray[i] = chiliArray[i - 1];
       }
       chiliArray[0] = 2; // เพิ่มค่าพริกเขียวในตำแหน่งแรก
     }
-    else
+    else if (h_avg >= 170 && h_avg <= 260)
     {
       Serial.println("Not");
-      output = 0;
-      for (int i = 3; i > 0; i--)
-      {
-        chiliArray[i] = chiliArray[i - 1];
+       numGray2++;
+       _ui_label_set_property(ui_numGray, _UI_LABEL_PROPERTY_TEXT, std::to_string(numGray2).c_str());
+       output = 0;
+       for (int i = 3; i > 0; i--)
+       {
+         chiliArray[i] = chiliArray[i - 1];
       }
-      chiliArray[0] = 0; // เพิ่มค่าพริกเขียวในตำแหน่งแรก
+      chiliArray[0] = 3; // เพิ่มค่าพริกเขียวในตำแหน่งแรก
     }
 
     // รีเซ็ตค่าเพื่อเก็บค่าใหม่ในครั้งต่อไป
@@ -714,150 +530,129 @@ void checkchii111() // gpt
   }
 }
 
-void checkcolor()
-{
-  // if ((170 <= h && h <= 260)) // สีพื้น
-  // {
-  //   analogWrite(2, mappspeed1); // ตั้งค่าความเร็วของไฟฟ้า
-  //   analogWrite(4, mappspeed2); // ตั้งค่าความเร็วของไฟฟ้า
-  //   Serial.println("not obj");
-  // }
-  // else if ((169 >= h || h >= 261))
-  // {
-  //   analogWrite(2, 120);        // ตั้งค่าความเร็วของไฟฟ้า
-  //   analogWrite(4, mappspeed2); // ตั้งค่าความเร็วของไฟฟ้า
-  //   h_sum += h;
-  //   h_count++;
-  // }
-
-  if (round(map(speed, 0, 100, 7, 20)) == h_count)
-  {
-    h_avg = h_sum / h_count;
-
-    if (h_avg >= 260 && h_avg <= 355)
-    {
-      Serial.println("Red");
-      // servo.write(120); // Rotate servo for red pepper to 120 degrees ส่วนในการตั้งค่ารอ
-      output = RED_CHILI;
-      // h_count = 0;
-      h_avg = 0;
-      for (int i = 3; i > 0; i--) // for (int i = MAX_CHILI - 1; i > 0; i--)
-      {
-        chiliArray[i] = chiliArray[i - 1];
-      }
-      chiliArray[0] = 1; // เพิ่มค่าพริกใหม่ในตำแหน่งแรก
-                         // servoposition = 120;
-    }
-    else if (h_avg >= 20 && h_avg <= 50)
-    {
-      Serial.println("Green");
-      // servo.write(0); // Rotate servo for green pepper to 120 degrees
-      output = GREEN_CHILI;
-      // h_count = 0;
-      h_avg = 0;
-      for (int i = 3; i > 0; i--) // for (int i = MAX_CHILI - 1; i > 0; i--)
-      {
-        chiliArray[i] = chiliArray[i - 1];
-      }
-      chiliArray[0] = 2; // เพิ่มค่าพริกใหม่ในตำแหน่งแรก
-                         // servoposition = 0;
-    }
-    else if ((h_avg >= 51 && h_avg <= 199))
-    {
-      Serial.println("Not");
-      // servo.write(90); // Rotate servo for green pepper to 120 degrees
-      output = EMPTY; // จะพิจารณาตัดทิ้งเพราะใช้servopositionได้
-      // servoposition = 90;
-      // h_count = 0;
-      h_avg = 0;
-      // for (int i = 3; i > 0; i--) // for (int i = MAX_CHILI - 1; i > 0; i--)
-      // {
-      //   chiliArray[i] = chiliArray[i - 1];
-      // }
-      // chiliArray[0] = 0; // เพิ่มค่าพริกใหม่ในตำแหน่งแรก
-    }
-    h_sum = 0;
-    h_count = 0;
-    // เลื่อนค่าในอาเรย์
-  }
-}
-
 void readobj()
 {
-  // input = 0 ;
-  //   input = analogRead(35);
+
   input = digitalRead(35);
+}
+
+void setServoPosition(int angle)
+{
+  // คำนวณความกว้างของพัลส์ที่ต้องการ (1ms ถึง 2ms)
+  int pulseWidth = map(angle, 0, 180, 544, 2400); // 544us ถึง 2400us
+  // ส่งพัลส์ PWM ไปที่พินของเซอร์โว
+  digitalWrite(12, HIGH);
+  delayMicroseconds(pulseWidth);
+  digitalWrite(12, LOW);
+  delay(20 - pulseWidth / 1000);
 }
 
 void servoslite()
 {
-
-  if (input == 0)
+  if (chiliArray[2] != 0)
   {
-    if (chiliArray[2] == RED_CHILI)
+
+    if (input == 0)
     {
-      servo.write(0);
-      servoposition = 0;
-    }
-    else if (chiliArray[2] == GREEN_CHILI)
-    {
-      servo.write(90);
-      servoposition = 90;
-    }
-    else if (chiliArray[2] == EMPTY)
-    {
-      servo.write(45);
-      servoposition = 45;
-    }
-    else
-    {
-      servo.write(servoposition);
+      if (chiliArray[2] == RED_CHILI)
+      {
+
+        
+
+        // _ui_slider_set_text_value(ui_numRed, red2, "", "");
+        setServoPosition(0);
+        servoposition = 0;
+
+
+      }
+      else if (chiliArray[2] == GREEN_CHILI)
+      {
+
+        //  _ui_slider_set_text_value(ui_numGreen, green2, "", "");
+
+        setServoPosition(90);
+        servoposition = 90;
+      }
+      else if (chiliArray[2] == EMPTY)
+      {
+        numGray2++;
+        //  _ui_slider_set_text_value(ui_numGray, numGray2, "", "");
+
+        setServoPosition(45);
+        servoposition = 45;
+      }
+      else
+      {
+        setServoPosition(servoposition);
+      }
     }
   }
 }
 
 void loop()
 {
+
   lv_timer_handler(); /* let the GUI do its work */
   if (onOffStage == 1)
   {
-    readtsc();
-    // delay(5);
-    checkchii();
-    // checkcolor();
-    // delay(5);
 
-    readobj();
-    // delay(5);
-
-    servoslite();
-    delay(5);
-
-    // analogWrite(2, mappspeed1); // ตั้งค่าความเร็วของไฟฟ้า
-    // analogWrite(4, mappspeed2); // ตั้งค่าความเร็วของไฟฟ้า
-    // Serial.print(mappspeed1);
-    // Serial.print("    ");
-
-    // Serial.print(mappspeed2);
-    // Serial.print("    ");
-
-    // Serial.print("input =");
-    // Serial.print(input);
-    Serial.print("H= ");
-    Serial.print(h);
-    // Serial.print("    ");
-    // Serial.println(round(map(speed, 0, 100, 7, 20)));
-    // Serial.println("Havg= ");
-    // Serial.print(h_avg);
-    // Serial.print("H= ");
-    // Serial.print(h_count);
-    // Serial.print("Hsum= ");
-    // Serial.print(h_sum);
-    Serial.println("Chili Array: ");
-    for (int i = 0; i < 3; i++)
+    if (reset == 1)
     {
-      Serial.print(chiliArray[i]);
-      Serial.print(" ");
+      green2 = 0;
+      numGray2 = 0;
+      red2 = 0;
+      // _ui_slider_set_text_value(ui_numRed, red2, "", "");
+      // _ui_slider_set_text_value(ui_numGreen, green2, "", "");
+      // _ui_slider_set_text_value(ui_numGray, numGray2, "", "");
+    }
+    if (st == 0)
+    {
+      // myservo.write(45);
+      // setServoPosition(45);
+      // delay(2000);
+      // // myservo.write(90);
+      // setServoPosition(90);
+      //     delay(2000);
+
+      readtsc();
+      // delay(5);
+      // checkchii();
+      // checkcolor();
+      // delay(5);
+      checkchii111();
+      readobj();
+      // delay(5);
+
+      servoslite();
+      delay(5);
+
+      // analogWrite(2, mappspeed1); // ตั้งค่าความเร็วของไฟฟ้า
+      // analogWrite(4, mappspeed2); // ตั้งค่าความเร็วของไฟฟ้า
+      // Serial.print(mappspeed1);
+      // Serial.print("    ");
+
+      // Serial.print(mappspeed2);
+      // Serial.print("    ");
+
+      Serial.print("input =");
+      Serial.print(input);
+      Serial.print("H= ");
+      Serial.print(h);
+      Serial.print(st);
+
+      // Serial.println(round(map(speed, 0, 100, 7, 20)));
+      Serial.println("Havg= ");
+      // Serial.print(h_avg);
+      // Serial.print("H= ");
+      // Serial.print(h_count);
+      // Serial.print("Hsum= ");
+      // Serial.print(h_sum);
+      Serial.println("Chili Array: ");
+      for (int i = 0; i < 3; i++)
+      {
+        Serial.print(chiliArray[i]);
+        Serial.print(" ");
+      }
     }
   }
 }
