@@ -30,6 +30,7 @@
 #include <LovyanGFX.hpp>
 #include <ESP32Time.h>
 #include <tcs3200.h>
+#include <vector>
 
 #ifdef PLUS
 #define SCR 30
@@ -305,7 +306,8 @@ tcs3200 tcs(5, 33, 32, 27, 25);
 // tcs3200 tcs(2, 4, 33, 32, 27);  (S0, S1, S2, S3, output pin)
 // Servo myservo;
 
-int chiliArray[4] = {0}; // maxchili
+// int chiliArray[4] = {0}; // maxchili
+std::vector<int> chiliVector = {NULL};
 #define RED_CHILI 1
 #define GREEN_CHILI 2
 #define EMPTY 3
@@ -488,40 +490,47 @@ void checkchii111() // gpt
     {
       Serial.println("Red");
 
-       red2++;
-       _ui_label_set_property(ui_numRed, _UI_LABEL_PROPERTY_TEXT, std::to_string(red2).c_str());
-       output = 1;
+      red2++;
+      _ui_label_set_property(ui_numRed, _UI_LABEL_PROPERTY_TEXT, std::to_string(red2).c_str());
+      //  output = 1;
 
-       for (int i = 3; i > 0; i--)
-       {
-         chiliArray[i] = chiliArray[i - 1];
-      }
-      chiliArray[0] = 1; // เพิ่มค่าพริกแดงในตำแหน่งแรก
+      chiliVector.insert(chiliVector.begin(), 1);
+
+      //  for (int i = 3; i > 0; i--)
+      //  {
+      //    chiliArray[i] = chiliArray[i - 1];
+      // }
+      // chiliArray[0] = 1; // เพิ่มค่าพริกแดงในตำแหน่งแรก
     }
     else if (h_avg >= 12 && h_avg <= 50)
     {
       Serial.println("Green");
-       green2++;
-       _ui_label_set_property(ui_numGreen, _UI_LABEL_PROPERTY_TEXT, std::to_string(green2).c_str());
+      green2++;
+      _ui_label_set_property(ui_numGreen, _UI_LABEL_PROPERTY_TEXT, std::to_string(green2).c_str());
 
-       output = 2;
-       for (int i = 3; i > 0; i--)
-       {
-         chiliArray[i] = chiliArray[i - 1];
-      }
-      chiliArray[0] = 2; // เพิ่มค่าพริกเขียวในตำแหน่งแรก
+      //  output = 2;
+
+      chiliVector.insert(chiliVector.begin(), 2);
+
+      //  for (int i = 3; i > 0; i--)
+      //  {
+      //    chiliArray[i] = chiliArray[i - 1];
+      // }
+      // chiliArray[0] = 2; // เพิ่มค่าพริกเขียวในตำแหน่งแรก
     }
     else if (h_avg >= 170 && h_avg <= 260)
     {
       Serial.println("Not");
-       numGray2++;
-       _ui_label_set_property(ui_numGray, _UI_LABEL_PROPERTY_TEXT, std::to_string(numGray2).c_str());
-       output = 0;
-       for (int i = 3; i > 0; i--)
-       {
-         chiliArray[i] = chiliArray[i - 1];
-      }
-      chiliArray[0] = 3; // เพิ่มค่าพริกเขียวในตำแหน่งแรก
+      numGray2++;
+      _ui_label_set_property(ui_numGray, _UI_LABEL_PROPERTY_TEXT, std::to_string(numGray2).c_str());
+      //  output = 3;
+      chiliVector.insert(chiliVector.begin(), 3);
+
+      //  for (int i = 3; i > 0; i--)
+      //  {
+      //    chiliArray[i] = chiliArray[i - 1];
+      // }
+      // chiliArray[0] = 3; // เพิ่มค่าพริกเขียวในตำแหน่งแรก
     }
 
     // รีเซ็ตค่าเพื่อเก็บค่าใหม่ในครั้งต่อไป
@@ -529,13 +538,37 @@ void checkchii111() // gpt
     h_count = 0;
   }
 }
-
+const int sensorPin = 2;                 // Pin ที่เชื่อมต่อกับเซนเซอร์
+bool chiliDetected = false;              // สถานะว่าพริกเข้ามาหรือยัง
+unsigned long detectionTime = 0;         // เวลาที่ตรวจจับพริก
+const unsigned long debounceDelay = 500; // เวลาหน่วงเพื่อป้องกันการตรวจจับซ้ำ
+bool chili = false;
 void readobj()
 {
 
   input = digitalRead(35);
-}
 
+  if (input == 0)
+  {
+    // ตรวจพบพริก
+    if (!chiliDetected)
+    {
+      chiliDetected = true;
+      detectionTime = millis(); // บันทึกเวลาที่พริกเข้ามา
+      Serial.println("Chili detected!");
+    }
+  }
+  else
+  {
+    // พริกออกไปแล้ว
+    if (chiliDetected && (millis() - detectionTime > debounceDelay))
+    {
+      chiliDetected = false;
+      // ส่งค่าไปประมวลผล
+      chili = true ;
+    }
+  }
+}
 void setServoPosition(int angle)
 {
   // คำนวณความกว้างของพัลส์ที่ต้องการ (1ms ถึง 2ms)
@@ -546,45 +579,58 @@ void setServoPosition(int angle)
   digitalWrite(12, LOW);
   delay(20 - pulseWidth / 1000);
 }
-
+bool hasRemoved = false;
 void servoslite()
 {
-  if (chiliArray[2] != 0)
+  if (chiliVector.back() == 0)
+  {
+    chiliVector.pop_back();
+  }
+  if (!chiliVector.empty())
   {
 
-    if (input == 0)
+    if (chili)
     {
-      if (chiliArray[2] == RED_CHILI)
-      {
 
-        
+      if (chiliVector.back() == RED_CHILI)
+      {
 
         // _ui_slider_set_text_value(ui_numRed, red2, "", "");
         setServoPosition(0);
         servoposition = 0;
-
-
+        chiliVector.pop_back();
+        hasRemoved = true;
       }
-      else if (chiliArray[2] == GREEN_CHILI)
+      else if (chiliVector.back() == GREEN_CHILI)
       {
 
         //  _ui_slider_set_text_value(ui_numGreen, green2, "", "");
 
         setServoPosition(90);
         servoposition = 90;
+        chiliVector.pop_back();
+        chili = false;
       }
-      else if (chiliArray[2] == EMPTY)
+      else if (chiliVector.back() == EMPTY)
       {
         numGray2++;
         //  _ui_slider_set_text_value(ui_numGray, numGray2, "", "");
 
         setServoPosition(45);
         servoposition = 45;
+        chiliVector.pop_back();
+        chili = false;
       }
-      else
-      {
-        setServoPosition(servoposition);
-      }
+      // else
+      // {
+      //   setServoPosition(servoposition);
+      // }
+    }
+    else
+    {
+      hasRemoved = false;
+
+      setServoPosition(servoposition);
     }
   }
 }
@@ -647,11 +693,16 @@ void loop()
       // Serial.print(h_count);
       // Serial.print("Hsum= ");
       // Serial.print(h_sum);
-      Serial.println("Chili Array: ");
-      for (int i = 0; i < 3; i++)
+      Serial.println("Chili vector: ");
+      // for (int i = 0; i < 3; i++)
+      // {
+      //   Serial.print(chiliArray[i]);
+      //   Serial.print(" ");
+      // }
+
+      for (int i = 0; i < chiliVector.size(); ++i)
       {
-        Serial.print(chiliArray[i]);
-        Serial.print(" ");
+        Serial.print(chiliVector[i]);
       }
     }
   }
