@@ -396,6 +396,8 @@ void readtsc()
   green = tcs.colorRead('g'); // reads color value for green
   blue = tcs.colorRead('b');  // reads color value for blue
   rgb_to_hsv(red, green, blue);
+
+  delay(50);
 }
 
 void rgb_to_hsv(double r, double g, double b)
@@ -426,6 +428,9 @@ void rgb_to_hsv(double r, double g, double b)
   // if cmax equal b then compute h
   else if (cmax == b)
     h = fmod(60 * ((r - g) / diff) + 240, 360);
+
+
+    
 }
 
 unsigned long lastTimeChecked = 0;
@@ -470,7 +475,7 @@ void checkchii111() // gpt
       {
         startCaptureTime = millis(); // บันทึกเวลาเริ่มต้นเมื่อเจอพริกครั้งแรก
       }
-      else if (millis() - startCaptureTime > 100) // ตรวจสอบเวลาหากผ่านไปมากกว่า 0.5 วินาที
+      else if (millis() - startCaptureTime > 50) // ตรวจสอบเวลาหากผ่านไปมากกว่า 0.5 วินาที
       {
         capturing = true;
         lastTimeChecked = millis(); // เริ่มเก็บค่าใหม่
@@ -518,7 +523,7 @@ void checkchii111() // gpt
       // }
       // chiliArray[0] = 2; // เพิ่มค่าพริกเขียวในตำแหน่งแรก
     }
-    else if (h_avg >= 170 && h_avg <= 260)
+    else 
     {
       Serial.println("Not");
       numGray2++;
@@ -613,7 +618,7 @@ void servoslite()
       }
       else if (chiliVector.back() == EMPTY)
       {
-        numGray2++;
+        
         //  _ui_slider_set_text_value(ui_numGray, numGray2, "", "");
 
         setServoPosition(45);
@@ -642,15 +647,7 @@ void loop()
   if (onOffStage == 1)
   {
 
-    if (reset == 1)
-    {
-      green2 = 0;
-      numGray2 = 0;
-      red2 = 0;
-      // _ui_slider_set_text_value(ui_numRed, red2, "", "");
-      // _ui_slider_set_text_value(ui_numGreen, green2, "", "");
-      // _ui_slider_set_text_value(ui_numGray, numGray2, "", "");
-    }
+
     if (st == 0)
     {
       // myservo.write(45);
@@ -704,6 +701,20 @@ void loop()
       {
         Serial.print(chiliVector[i]);
       }
+    }else {
+      analogWrite(2, 0); // ตั้งค่าความเร็วของไฟฟ้า
+      analogWrite(4, 0);
     }
+  }
+  if (reset == 1)
+  {
+    green2 = 0;
+    numGray2 = 0;
+    red2 = 0;
+    _ui_label_set_property(ui_numGreen, _UI_LABEL_PROPERTY_TEXT, "0");
+    _ui_label_set_property(ui_numRed, _UI_LABEL_PROPERTY_TEXT, "0");
+    _ui_label_set_property(ui_numGray, _UI_LABEL_PROPERTY_TEXT, "0");
+
+    delay(5000);
   }
 }

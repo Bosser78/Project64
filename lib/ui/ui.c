@@ -199,12 +199,14 @@ void ui_event_Button3(lv_event_t *e)
     lv_obj_t *target = lv_event_get_target(e);
     if (event_code == LV_EVENT_CLICKED)
     {
-        reset = 1;
-    }
-    else
-    {
-        reset = 0;
-    }
+
+            reset = 1;
+        
+        
+    }else
+        {
+            reset = 0;
+        }
 }
 ///////////////////// SCREENS ////////////////////
 
