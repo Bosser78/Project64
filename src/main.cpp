@@ -306,7 +306,7 @@ tcs3200 tcs(5, 33, 32, 27, 25);
 // tcs3200 tcs(2, 4, 33, 32, 27);  (S0, S1, S2, S3, output pin)
 // Servo myservo;
 
-// int chiliArray[4] = {0}; // maxchili
+
 std::vector<int> chiliVector = {NULL};
 #define RED_CHILI 1
 #define GREEN_CHILI 2
@@ -315,12 +315,10 @@ void setup()
 {
   pinMode(35, INPUT_PULLUP);
 
-  // pinMode(15, INPUT);
 
-  // pinMode(14, OUTPUT);
 
   Serial.begin(115200);
-  // myservo.attach(2);
+
   tft.init();
 
   tft.initDMA();
@@ -385,10 +383,7 @@ int green2 = 0;
 int numGray2 = 0;
 
 bool objdetac = false;
-// void readtsc();
-// void readobj();
-// void checkcolor();
-// void servoslite();
+
 
 void readtsc()
 {
@@ -400,38 +395,7 @@ void readtsc()
   delay(50);
 }
 
-void rgb_to_hsv(double r, double g, double b)
-{
-  // R, G, B values are divided by 255
-  // to change the range from 0..255 to 0..1
-  r = r / 255.0;
-  g = g / 255.0;
-  b = b / 255.0;
 
-  // h, s, v = hue, saturation, value
-  double cmax = max(r, max(g, b)); // maximum of r, g, b
-  double cmin = min(r, min(g, b)); // minimum of r, g, b
-  double diff = cmax - cmin;       // diff of cmax and cmin.
-
-  // if cmax and cmax are equal then h = 0
-  if (cmax == cmin)
-    h = 0;
-
-  // if cmax equal r then compute h
-  else if (cmax == r)
-    h = fmod(60 * ((g - b) / diff) + 360, 360);
-
-  // if cmax equal g then compute h
-  else if (cmax == g)
-    h = fmod(60 * ((b - r) / diff) + 120, 360);
-
-  // if cmax equal b then compute h
-  else if (cmax == b)
-    h = fmod(60 * ((r - g) / diff) + 240, 360);
-
-
-    
-}
 
 unsigned long lastTimeChecked = 0;
 unsigned long startTimeChili = 0;
@@ -497,15 +461,10 @@ void checkchii111() // gpt
 
       red2++;
       _ui_label_set_property(ui_numRed, _UI_LABEL_PROPERTY_TEXT, std::to_string(red2).c_str());
-      //  output = 1;
+
 
       chiliVector.insert(chiliVector.begin(), 1);
 
-      //  for (int i = 3; i > 0; i--)
-      //  {
-      //    chiliArray[i] = chiliArray[i - 1];
-      // }
-      // chiliArray[0] = 1; // เพิ่มค่าพริกแดงในตำแหน่งแรก
     }
     else if (h_avg >= 12 && h_avg <= 50)
     {
@@ -513,29 +472,19 @@ void checkchii111() // gpt
       green2++;
       _ui_label_set_property(ui_numGreen, _UI_LABEL_PROPERTY_TEXT, std::to_string(green2).c_str());
 
-      //  output = 2;
 
       chiliVector.insert(chiliVector.begin(), 2);
 
-      //  for (int i = 3; i > 0; i--)
-      //  {
-      //    chiliArray[i] = chiliArray[i - 1];
-      // }
-      // chiliArray[0] = 2; // เพิ่มค่าพริกเขียวในตำแหน่งแรก
+ 
     }
     else 
     {
       Serial.println("Not");
       numGray2++;
       _ui_label_set_property(ui_numGray, _UI_LABEL_PROPERTY_TEXT, std::to_string(numGray2).c_str());
-      //  output = 3;
+
       chiliVector.insert(chiliVector.begin(), 3);
 
-      //  for (int i = 3; i > 0; i--)
-      //  {
-      //    chiliArray[i] = chiliArray[i - 1];
-      // }
-      // chiliArray[0] = 3; // เพิ่มค่าพริกเขียวในตำแหน่งแรก
     }
 
     // รีเซ็ตค่าเพื่อเก็บค่าใหม่ในครั้งต่อไป
@@ -600,7 +549,6 @@ void servoslite()
       if (chiliVector.back() == RED_CHILI)
       {
 
-        // _ui_slider_set_text_value(ui_numRed, red2, "", "");
         setServoPosition(0);
         servoposition = 0;
         chiliVector.pop_back();
@@ -609,7 +557,6 @@ void servoslite()
       else if (chiliVector.back() == GREEN_CHILI)
       {
 
-        //  _ui_slider_set_text_value(ui_numGreen, green2, "", "");
 
         setServoPosition(90);
         servoposition = 90;
@@ -619,17 +566,14 @@ void servoslite()
       else if (chiliVector.back() == EMPTY)
       {
         
-        //  _ui_slider_set_text_value(ui_numGray, numGray2, "", "");
+
 
         setServoPosition(45);
         servoposition = 45;
         chiliVector.pop_back();
         chili = false;
       }
-      // else
-      // {
-      //   setServoPosition(servoposition);
-      // }
+
     }
     else
     {
@@ -650,32 +594,18 @@ void loop()
 
     if (st == 0)
     {
-      // myservo.write(45);
-      // setServoPosition(45);
-      // delay(2000);
-      // // myservo.write(90);
-      // setServoPosition(90);
-      //     delay(2000);
+ 
 
       readtsc();
-      // delay(5);
-      // checkchii();
-      // checkcolor();
-      // delay(5);
+
       checkchii111();
       readobj();
-      // delay(5);
+
 
       servoslite();
       delay(5);
 
-      // analogWrite(2, mappspeed1); // ตั้งค่าความเร็วของไฟฟ้า
-      // analogWrite(4, mappspeed2); // ตั้งค่าความเร็วของไฟฟ้า
-      // Serial.print(mappspeed1);
-      // Serial.print("    ");
-
-      // Serial.print(mappspeed2);
-      // Serial.print("    ");
+ 
 
       Serial.print("input =");
       Serial.print(input);
@@ -683,19 +613,11 @@ void loop()
       Serial.print(h);
       Serial.print(st);
 
-      // Serial.println(round(map(speed, 0, 100, 7, 20)));
+
       Serial.println("Havg= ");
-      // Serial.print(h_avg);
-      // Serial.print("H= ");
-      // Serial.print(h_count);
-      // Serial.print("Hsum= ");
-      // Serial.print(h_sum);
+
       Serial.println("Chili vector: ");
-      // for (int i = 0; i < 3; i++)
-      // {
-      //   Serial.print(chiliArray[i]);
-      //   Serial.print(" ");
-      // }
+     
 
       for (int i = 0; i < chiliVector.size(); ++i)
       {
