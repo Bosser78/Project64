@@ -390,10 +390,52 @@ void readtsc()
   red = tcs.colorRead('r');   // reads color value for red
   green = tcs.colorRead('g'); // reads color value for green
   blue = tcs.colorRead('b');  // reads color value for blue
-  rgb_to_hsv(red, green, blue);
+
+  // Check if the color is white
+  if (red > 200 && green > 200 && blue > 200)
+  {
+    Serial.println("Color: White");
+  }
+  // Check if the color is black
+  else if (red < 50 && green < 50 && blue < 50)
+  {
+    Serial.println("Color: Black");
+  }
+  // Check if the color is red
+  else if (red > green && red > blue)
+  {
+    Serial.println("Color: Red");
+  }
+  // Check if the color is blue
+  else if (blue > red && blue > green)
+  {
+    Serial.println("Color: Blue");
+  }
+  // Check if the color is green
+  else if (green > red && green > blue)
+  {
+    Serial.println("Color: Green");
+  }
+  else
+  {
+    // Check if the RGB values fall within the specified ranges for red and green
+    if (red >= 120 && red <= 180 && green >= 20 && green <= 50 && blue >= 30 && blue <= 50)
+    {
+      Serial.println("Color: Red");
+    }
+    else if (red >= 20 && red <= 50 && green >= 120 && green <= 180 && blue >= 30 && blue <= 50)
+    {
+      Serial.println("Color: Green");
+    }
+    else
+    {
+      Serial.println("Color: Unknown");
+    }
+  }
 
   delay(50);
 }
+
 
 
 
@@ -598,25 +640,25 @@ void loop()
 
       readtsc();
 
-      checkchii111();
-      readobj();
+      // checkchii111();
+      // readobj();
 
 
-      servoslite();
-      delay(5);
+      // servoslite();
+      // delay(5);
 
  
 
-      Serial.print("input =");
-      Serial.print(input);
-      Serial.print("H= ");
-      Serial.print(h);
-      Serial.print(st);
+      // Serial.print("input =");
+      // Serial.print(input);
+      // Serial.print("H= ");
+      // Serial.print(h);
+      // Serial.print(st);
 
 
-      Serial.println("Havg= ");
+      // Serial.println("Havg= ");
 
-      Serial.println("Chili vector: ");
+      // Serial.println("Chili vector: ");
      
 
       for (int i = 0; i < chiliVector.size(); ++i)
