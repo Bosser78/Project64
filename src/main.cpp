@@ -399,6 +399,48 @@ void readtsc()
   green = tcs.colorRead('g'); // reads color value for green
   blue = tcs.colorRead('b');  // reads color value for blue
 
+  // Check if the color is white
+  if (red > 200 && green > 200 && blue > 200)
+  {
+    Serial.println("Color: White");
+  }
+  // Check if the color is black
+  else if (red < 50 && green < 50 && blue < 50)
+  {
+    Serial.println("Color: Black");
+  }
+  // Check if the color is red
+  else if (red > green && red > blue)
+  {
+    Serial.println("Color: Red");
+  }
+  // Check if the color is blue
+  else if (blue > red && blue > green)
+  {
+    Serial.println("Color: Blue");
+  }
+  // Check if the color is green
+  else if (green > red && green > blue)
+  {
+    Serial.println("Color: Green");
+  }
+  else
+  {
+    // Check if the RGB values fall within the specified ranges for red and green
+    if (red >= 120 && red <= 180 && green >= 20 && green <= 50 && blue >= 30 && blue <= 50)
+    {
+      Serial.println("Color: Red");
+    }
+    else if (red >= 20 && red <= 50 && green >= 120 && green <= 180 && blue >= 30 && blue <= 50)
+    {
+      Serial.println("Color: Green");
+    }
+    else
+    {
+      Serial.println("Color: Unknown");
+    }
+  }
+
   // Normalize against white calibration values
   //  red = map(red, 0, 40 - 16, 0, 255);
   //  green = map(green, 0, 43 - 16, 0, 255);
@@ -474,6 +516,9 @@ void readtsc()
 
   delay(1000);
 }
+
+
+
 
 unsigned long lastTimeChecked = 0;
 unsigned long startTimeChili = 0;
@@ -698,8 +743,8 @@ void loop()
       // checkchii111();
       // readobj();
 
-      // servoslite();
-      // delay(5);
+      // checkchii111();
+      // readobj();
 
       // Serial.print("input =");
       // Serial.print(input);
@@ -714,10 +759,12 @@ void loop()
       // Serial.println(blue);
       // Serial.print(st);
 
-      // Serial.println("Havg= ");
+      // servoslite();
+      // delay(5);
 
       // Serial.println("Chili vector: ");
 
+<<<<<<< HEAD
       // for (int i = 0; i < chiliVector.size(); ++i)
       // {
       //   Serial.print(chiliVector[i]);
@@ -725,6 +772,25 @@ void loop()
     }
     else
     {
+=======
+      // Serial.print("input =");
+      // Serial.print(input);
+      // Serial.print("H= ");
+      // Serial.print(h);
+      // Serial.print(st);
+
+
+      // Serial.println("Havg= ");
+
+      // Serial.println("Chili vector: ");
+     
+
+      for (int i = 0; i < chiliVector.size(); ++i)
+      {
+        Serial.print(chiliVector[i]);
+      }
+    }else {
+>>>>>>> 7474267646b0d0fa05f64b290a5a7e781ddc1191
       analogWrite(2, 0); // ตั้งค่าความเร็วของไฟฟ้า
       analogWrite(4, 0);
       red2 = 100;
