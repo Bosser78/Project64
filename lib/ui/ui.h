@@ -58,6 +58,16 @@ extern lv_obj_t *ui_Button2;
 void ui_event_Button3(lv_event_t *e);
 extern lv_obj_t *ui_Button3;
 
+// SCREEN: ui_Screen3
+void ui_Screen3_screen_init(void);
+extern lv_obj_t *ui_Screen3;
+void ui_event_Panel3(lv_event_t *e);
+extern lv_obj_t *ui_Panel3;
+extern lv_obj_t *ui_Image2;
+extern lv_obj_t *ui_Label1;
+extern lv_obj_t *ui_Label6;
+extern lv_obj_t *ui____initial_actions0;
+
 LV_IMG_DECLARE(ui_img_eight_32_png);    // assets/eight_32.png
 LV_IMG_DECLARE(ui_img_eight_64_png);    // assets/eight_64.png
 LV_IMG_DECLARE(ui_img_five_64_png);    // assets/five_64.png
@@ -71,6 +81,7 @@ LV_IMG_DECLARE(ui_img_three_64_png);    // assets/three_64.png
 LV_IMG_DECLARE(ui_img_two_64_png);    // assets/two_64.png
 LV_IMG_DECLARE(ui_img_zero_64_png);    // assets/zero_64.png
 LV_IMG_DECLARE(ui_img_2040832490);     // assets/zero_64.png
+LV_IMG_DECLARE(ui_img_1144639462);     // assets/Calibration-removebg-preview (1).png
 
 LV_FONT_DECLARE(ui_font_Font1);
 LV_FONT_DECLARE(ui_font_Font2);

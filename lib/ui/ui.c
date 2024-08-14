@@ -50,19 +50,40 @@ lv_obj_t *ui_Button2;
 void ui_event_Button3(lv_event_t *e);
 lv_obj_t *ui_Button3;
 
-const lv_img_dsc_t *ui_imgset_eight_[2] = {&ui_img_eight_32_png, &ui_img_eight_64_png};
-const lv_img_dsc_t *ui_imgset_five_[1] = {&ui_img_five_64_png};
-const lv_img_dsc_t *ui_imgset_four_[1] = {&ui_img_four_64_png};
-const lv_img_dsc_t *ui_imgset_nine_[1] = {&ui_img_nine_64_png};
-const lv_img_dsc_t *ui_imgset_one_[1] = {&ui_img_one_64_png};
-const lv_img_dsc_t *ui_imgset_pause_[1] = {&ui_img_pause_32_png};
-const lv_img_dsc_t *ui_imgset_seven_[1] = {&ui_img_seven_64_png};
-const lv_img_dsc_t *ui_imgset_six_[1] = {&ui_img_six_64_png};
-const lv_img_dsc_t *ui_imgset_three_[1] = {&ui_img_three_64_png};
-const lv_img_dsc_t *ui_imgset_two_[1] = {&ui_img_two_64_png};
-const lv_img_dsc_t *ui_imgset_zero_[1] = {&ui_img_zero_64_png};
+// const lv_img_dsc_t *ui_imgset_eight_[2] = {&ui_img_eight_32_png, &ui_img_eight_64_png};
+// const lv_img_dsc_t *ui_imgset_five_[1] = {&ui_img_five_64_png};
+// const lv_img_dsc_t *ui_imgset_four_[1] = {&ui_img_four_64_png};
+// const lv_img_dsc_t *ui_imgset_nine_[1] = {&ui_img_nine_64_png};
+// const lv_img_dsc_t *ui_imgset_one_[1] = {&ui_img_one_64_png};
+// const lv_img_dsc_t *ui_imgset_pause_[1] = {&ui_img_pause_32_png};
+// const lv_img_dsc_t *ui_imgset_seven_[1] = {&ui_img_seven_64_png};
+// const lv_img_dsc_t *ui_imgset_six_[1] = {&ui_img_six_64_png};
+// const lv_img_dsc_t *ui_imgset_three_[1] = {&ui_img_three_64_png};
+// const lv_img_dsc_t *ui_imgset_two_[1] = {&ui_img_two_64_png};
+// const lv_img_dsc_t *ui_imgset_zero_[1] = {&ui_img_zero_64_png};
 
-///////////////////// TEST LVGL SETTINGS ////////////////////
+// SCREEN: ui_Screen3
+void ui_Screen3_screen_init(void);
+lv_obj_t *ui_Screen3;
+void ui_event_Panel3(lv_event_t *e);
+lv_obj_t *ui_Panel3;
+lv_obj_t *ui_Image2;
+lv_obj_t *ui_Label1;
+lv_obj_t *ui_Label6;
+lv_obj_t *ui____initial_actions0;
+// const lv_img_dsc_t *ui_imgset_eight_[2] = {&ui_img_eight_32_png, &ui_img_eight_64_png};
+// const lv_img_dsc_t *ui_imgset_five_[1] = {&ui_img_five_64_png};
+// const lv_img_dsc_t *ui_imgset_four_[1] = {&ui_img_four_64_png};
+// const lv_img_dsc_t *ui_imgset_nine_[1] = {&ui_img_nine_64_png};
+// const lv_img_dsc_t *ui_imgset_one_[1] = {&ui_img_one_64_png};
+// const lv_img_dsc_t *ui_imgset_pause_[1] = {&ui_img_pause_32_png};
+// const lv_img_dsc_t *ui_imgset_seven_[1] = {&ui_img_seven_64_png};
+// const lv_img_dsc_t *ui_imgset_six_[1] = {&ui_img_six_64_png};
+// const lv_img_dsc_t *ui_imgset_three_[1] = {&ui_img_three_64_png};
+// const lv_img_dsc_t *ui_imgset_two_[1] = {&ui_img_two_64_png};
+// const lv_img_dsc_t *ui_imgset_zero_[1] = {&ui_img_zero_64_png};
+
+// ///////////////////// TEST LVGL SETTINGS ////////////////////
 #if LV_COLOR_DEPTH != 16
 #error "LV_COLOR_DEPTH should be 16bit to match SquareLine Studio's settings"
 #endif
@@ -95,15 +116,23 @@ void blink_Animation(lv_obj_t *TargetObject, int delay)
 }
 
 ///////////////////// FUNCTIONS ////////////////////
+void switch_to_screen1(lv_timer_t *timer)
+{
+    _ui_screen_change(&ui_Screen2, LV_SCR_LOAD_ANIM_FADE_ON, 50, 0, &ui_Screen2_screen_init);
+    lv_timer_del(timer); // ลบ timer หลังจากที่ใช้งานเสร็จแล้ว
+}
 void ui_event_Panel2(lv_event_t *e)
 {
     lv_event_code_t event_code = lv_event_get_code(e);
     lv_obj_t *target = lv_event_get_target(e);
     if (event_code == LV_EVENT_CLICKED)
     {
-        _ui_screen_change(&ui_Screen2, LV_SCR_LOAD_ANIM_FADE_ON, 10, 0, &ui_Screen2_screen_init);
+        _ui_screen_change(&ui_Screen3, LV_SCR_LOAD_ANIM_FADE_ON, 10, 0, &ui_Screen3_screen_init);
+
+        lv_timer_t *timer = lv_timer_create(switch_to_screen1, 15000, NULL);
     }
 }
+
 void ui_event_PanelGreen(lv_event_t *e)
 {
     lv_event_code_t event_code = lv_event_get_code(e);
@@ -208,6 +237,8 @@ void ui_event_Button3(lv_event_t *e)
             reset = 0;
         }
 }
+
+
 ///////////////////// SCREENS ////////////////////
 
 void ui_init(void)
