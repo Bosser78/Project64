@@ -362,7 +362,7 @@ void setup()
   }
   pinMode(12, OUTPUT);
 }
-extern int mappspeed1, mappspeed2, speed;
+extern int mappspeed1, mappspeed2, speed, status;
 extern int onOffStage, reset, st;
 double red, green, blue;
 double h = 0;     // Initialize H value
@@ -389,107 +389,27 @@ int sumR = 0;
 int sumG = 0;
 int sumB = 0;
 int count = 0;
-
-int blackR, blackG, blackB;
-int whiteR, whiteG, whiteB;
+int statusPW;
+int calibrateR, calibrateG, calibrateB;
+bool calibrate = true;
 
 void readtsc()
 {
+
   red = tcs.colorRead('r');   // reads color value for red
   green = tcs.colorRead('g'); // reads color value for green
   blue = tcs.colorRead('b');  // reads color value for blue
 
-  // Check if the color is white
-  if (red > 200 && green > 200 && blue > 200)
-  {
-    Serial.println("Color: White");
-  }
-  // Check if the color is black
-  else if (red < 50 && green < 50 && blue < 50)
-  {
-    Serial.println("Color: Black");
-  }
-  // Check if the color is red
-  else if (red > green && red > blue)
-  {
-    Serial.println("Color: Red");
-  }
-  // Check if the color is blue
-  else if (blue > red && blue > green)
-  {
-    Serial.println("Color: Blue");
-  }
-  // Check if the color is green
-  else if (green > red && green > blue)
-  {
-    Serial.println("Color: Green");
-  }
-  else
-  {
-    // Check if the RGB values fall within the specified ranges for red and green
-    if (red >= 120 && red <= 180 && green >= 20 && green <= 50 && blue >= 30 && blue <= 50)
-    {
-      Serial.println("Color: Red");
-    }
-    else if (red >= 20 && red <= 50 && green >= 120 && green <= 180 && blue >= 30 && blue <= 50)
-    {
-      Serial.println("Color: Green");
-    }
-    else
-    {
-      Serial.println("Color: Unknown");
-    }
-  }
+  // ลบค่าเฉลี่ยออกจากค่าที่อ่านได้
 
-  // Normalize against white calibration values
-  //  red = map(red, 0, 40 - 16, 0, 255);
-  //  green = map(green, 0, 43 - 16, 0, 255);
-  //  blue = map(blue, 0, 33 - 18, 0, 255);
-  // if (rgbcheck)
-  // {
-  //   analogWrite(2, 150); // ตั้งค่าความเร็ว
-  //   analogWrite(4, 0);   // ตั้งค่าความเร็ว
+  red = red - avgR;
+  green = green - avgG; // -1 เพราะ สีเขียวเป็นไรไม่รู้ค่าเพิ่มมา 1
+  blue = blue - avgB;
 
-  //   sumR += red;
-  //   sumG += green;
-  //   sumB += blue;
-  //   count++;
+  red = map(red, 0, 83 - 5, 0, 255);
+  green = map(green, 0, 83 - 5, 0, 255);
+  blue = map(blue, 0, 100 - 6, 0, 255);
 
-  //   if (count >= 400)
-  //   {
-  //     // คำนวณค่าเฉลี่ย
-  //     avgR = sumR / count;
-  //     avgG = sumG / count;
-  //     avgB = sumB / count;
-
-  //     // แสดงค่าเฉลี่ยสี RGB
-  //     Serial.print("Average R: ");
-  //     Serial.println(avgR);
-  //     Serial.print("Average G: ");
-  //     Serial.println(avgG);
-  //     Serial.print("Average B: ");
-  //     Serial.println(avgB);
-
-  //     // หยุดการเก็บค่าเฉลี่ยหลังจากคำนวณแล้ว
-  //     rgbcheck = false;
-  //     delay(500);
-  //   }
-  // }
-
-  // // ลบค่าเฉลี่ยออกจากค่าที่อ่านได้
-  // if (!rgbcheck) // คำนวณหลังจากที่ค่าเฉลี่ยได้แล้ว
-  // {
-  //   red = red - avgR;
-  //   green = green - avgG ;// -1 เพราะ สีเขียวเป็นไรไม่รู้ค่าเพิ่มมา 1
-  //   blue = blue - avgB;
-
-  //   Serial.print("Red after subtraction: ");
-  //   Serial.println(red);
-  //   Serial.print("Green after subtraction: ");
-  //   Serial.println(green);
-  //   Serial.print("Blue after subtraction: ");
-  //   Serial.println(blue);
-  // }
   Serial.print("Red after subtraction: ");
   Serial.println(red);
   Serial.print("Green after subtraction: ");
@@ -497,28 +417,8 @@ void readtsc()
   Serial.print("Blue after subtraction: ");
   Serial.println(blue);
 
-  // Check if the color is white
-
-    // Check if the RGB values fall within the specified ranges for red and green
-    // if ()
-    // {
-    //   Serial.println("Color: Red");
-    // }
-    // else if (red >= 20 && red <= 50 && green >= 120 && green <= 180 && blue >= 30 && blue <= 50)
-    // {
-    //   Serial.println("Color: Green");
-    // }
-    // else
-    // {
-    //   Serial.println("Color: Unknown");
-    // }
-  
-
-  delay(1000);
+  delay(20);
 }
-
-
-
 
 unsigned long lastTimeChecked = 0;
 unsigned long startTimeChili = 0;
@@ -536,14 +436,27 @@ void checkchii111() // gpt
     analogWrite(4, mappspeed2); // ตั้งค่าความเร็วของไฟฟ้า
 
     // เก็บค่าทุกค่าในช่วงที่ตรวจจับพริกอยู่
-    h_sum += h;
-    h_count++;
-    if ((h > 260 || h < 170))
+    if (red < 255 && green < 255 && blue < 255)
+    {
+      Serial.println("--------------capturing--------------");
+      Serial.println("sumR : " + sumR);
+
+      sumR = red + sumR;
+      sumG = green + sumG;
+      sumB = blue + sumB;
+      h_count++;
+    }
+    else
+    {
+      Serial.println("not capture");
+    }
+
+    if ((red > 10 || green > 10 || blue > 10))
     {
       lastTimeChecked = millis(); // อัพเดทเวลาเมื่อเจอค่าที่ตรงกับเงื่อนไข
     }
     // หากไม่เจอพริกในช่วงเวลาเกิน 0.4 วินาที
-    if (millis() - lastTimeChecked > 200)
+    if (millis() - lastTimeChecked > 100)
     {
       Serial.println("time out");
       capturing = false; // หยุดเก็บค่าถ้าเวลาเกิน 0.4 วินาที
@@ -556,13 +469,13 @@ void checkchii111() // gpt
     Serial.println("not obj");
 
     // ตรวจจับพริก
-    if ((h > 260 || h < 170))
+    if ((red > 7 && green > 7 && blue > 7))
     {
       if (startCaptureTime == 0)
       {
         startCaptureTime = millis(); // บันทึกเวลาเริ่มต้นเมื่อเจอพริกครั้งแรก
       }
-      else if (millis() - startCaptureTime > 50) // ตรวจสอบเวลาหากผ่านไปมากกว่า 0.5 วินาที
+      else if (millis() - startCaptureTime > 20) // ตรวจสอบเวลาหากผ่านไปมากกว่า 0.5 วินาที
       {
         capturing = true;
         lastTimeChecked = millis(); // เริ่มเก็บค่าใหม่
@@ -576,9 +489,25 @@ void checkchii111() // gpt
 
   if (!capturing && h_count > 0)
   {
-    float h_avg = (float)h_sum / h_count;
+    float h_avgR = (float)sumR / h_count;
+    float h_avgG = (float)sumG / h_count;
+    float h_avgB = (float)sumB / h_count;
+    Serial.print("count ");
+    Serial.println(h_count);
 
-    if (h_avg >= 260 && h_avg <= 355)
+    Serial.print("sumR ");
+    Serial.println(sumR);
+
+    Serial.print("Red ");
+    Serial.println(h_avgR);
+    Serial.print("Green  ");
+    Serial.println(h_avgG);
+    Serial.print("Blue  ");
+    Serial.println(h_avgB);
+
+    Serial.println("Chili is : ");
+
+    if ((h_avgR > h_avgG && h_avgR > h_avgB) && h_avgR > 80)
     {
       Serial.println("Red");
 
@@ -587,7 +516,7 @@ void checkchii111() // gpt
 
       chiliVector.insert(chiliVector.begin(), 1);
     }
-    else if (h_avg >= 12 && h_avg <= 50)
+    else if ((h_avgG > h_avgR && h_avgG > h_avgB) && h_avgG > 10)
     {
       Serial.println("Green");
       green2++;
@@ -605,14 +534,20 @@ void checkchii111() // gpt
     }
 
     // รีเซ็ตค่าเพื่อเก็บค่าใหม่ในครั้งต่อไป
-    h_sum = 0;
+    Serial.println("-----------reset-----------");
+    sumR = 0;
+    sumG = 0;
+    sumB = 0;
     h_count = 0;
+    Serial.println("h_avgR : " + String(sumR));
+    Serial.println("h_avgG : " + String(sumG));
+    Serial.println("h_avgB : " + String(sumB));
   }
 }
 const int sensorPin = 2;                 // Pin ที่เชื่อมต่อกับเซนเซอร์
 bool chiliDetected = false;              // สถานะว่าพริกเข้ามาหรือยัง
 unsigned long detectionTime = 0;         // เวลาที่ตรวจจับพริก
-const unsigned long debounceDelay = 500; // เวลาหน่วงเพื่อป้องกันการตรวจจับซ้ำ
+const unsigned long debounceDelay = 200; // เวลาหน่วงเพื่อป้องกันการตรวจจับซ้ำ
 bool chili = false;
 void readobj()
 {
@@ -626,7 +561,7 @@ void readobj()
     {
       chiliDetected = true;
       detectionTime = millis(); // บันทึกเวลาที่พริกเข้ามา
-      Serial.println("Chili detected!");
+      Serial.println("++++++++++++++++++++++++Chili detected!++++++++++++++++++++++");
     }
   }
   else
@@ -669,7 +604,7 @@ void servoslite()
         setServoPosition(0);
         servoposition = 0;
         chiliVector.pop_back();
-        hasRemoved = true;
+        chili = false;
       }
       else if (chiliVector.back() == GREEN_CHILI)
       {
@@ -690,125 +625,118 @@ void servoslite()
     }
     else
     {
-      hasRemoved = false;
-
+      chili = false;
       setServoPosition(servoposition);
     }
   }
 }
 
-
-// void rgbcalibrate()
-// {
-
-//   analogWrite(2, 150); // ตั้งค่าความเร็ว
-
-//   sumR += red;
-//   sumG += green;
-//   sumB += blue;
-//   count++;
-
-//   if (count >= 400)
-//   {
-//     // คำนวณค่าเฉลี่ย
-//     int avgR = sumR / count;
-//     int avgG = sumG / count;
-//     int avgB = sumB / count;
-
-//     // แสดงค่าเฉลี่ยสี RGB
-//     Serial.print("Average R: ");
-//     Serial.println(avgR);
-//     Serial.print("Average G: ");
-//     Serial.println(avgG);
-//     Serial.print("Average B: ");
-//     Serial.println(avgB);
-//     delay(5000);
-//   }
-// }
-
 void loop()
 {
 
   lv_timer_handler(); /* let the GUI do its work */
+
+  if (reset == 1)
+  {
+    green2 = 0;
+    numGray2 = 0;
+    red2 = 0;
+    _ui_label_set_property(ui_numGreen, _UI_LABEL_PROPERTY_TEXT, std::to_string(green2).c_str());
+    _ui_label_set_property(ui_numRed, _UI_LABEL_PROPERTY_TEXT, std::to_string(red2).c_str());
+    _ui_label_set_property(ui_numGray, _UI_LABEL_PROPERTY_TEXT, std::to_string(numGray2).c_str());
+    reset = 0;
+
+    Serial.print("----------------------------reset----------------------------------------");
+    Serial.print("----------------------------reset----------------------------------------");
+    Serial.print("----------------------------reset----------------------------------------");
+  }
+  if (status && onOffStage == 0)
+  {
+
+    delay(5);
+    red = tcs.colorRead('r');   // reads color value for red
+    green = tcs.colorRead('g'); // reads color value for green
+    blue = tcs.colorRead('b');  // reads color value for blue
+
+    analogWrite(2, 190); // ตั้งค่าความเร็ว
+    analogWrite(4, 0);   // ตั้งค่าความเร็ว
+
+    sumR += red;
+    sumG += green;
+    sumB += blue;
+    count++;
+
+    if (count >= 2000)
+    {
+      // คำนวณค่าเฉลี่ย
+      avgR = sumR / count;
+      avgG = sumG / count;
+      avgB = sumB / count;
+
+      // แสดงค่าเฉลี่ยสี RGB
+      Serial.print("Average R: ");
+      Serial.println(avgR);
+      Serial.print("Average G: ");
+      Serial.println(avgG);
+      Serial.print("Average B: ");
+      Serial.println(avgB);
+      Serial.print("count : ");
+      Serial.println(count);
+
+      // หยุดการเก็บค่าเฉลี่ยหลังจากคำนวณแล้ว
+      status = false;
+      sumB = 0;
+      sumG = 0;
+      sumR = 0;
+      delay(500);
+    }
+  }
+
   if (onOffStage == 1)
   {
 
     if (st == 0)
     {
-      // _ui_label_set_property(ui_numGreen, _UI_LABEL_PROPERTY_TEXT, "10");
-      // _ui_label_set_property(ui_numRed, _UI_LABEL_PROPERTY_TEXT, "01");
-      // _ui_label_set_property(ui_numGray, _UI_LABEL_PROPERTY_TEXT, "10");
-      // readtsc();
 
-      // checkchii111();
-      // readobj();
+      readtsc();
 
-      // checkchii111();
-      // readobj();
+      checkchii111();
+      readobj();
 
-      // Serial.print("input =");
-      // Serial.print(input);
-      // Serial.print("H= ");
-      // Serial.print(h);
-      // Serial.print(st);
-      // Serial.print("red =");
-      // Serial.println(red2);
-      // Serial.print("green = ");
-      // Serial.println(green2);
-      // Serial.print("blue = ");
-      // Serial.println(blue);
-      // Serial.print(st);
-
-      // servoslite();
-      // delay(5);
+      servoslite();
+      // delay();
 
       // Serial.println("Chili vector: ");
 
-<<<<<<< HEAD
-      // for (int i = 0; i < chiliVector.size(); ++i)
-      // {
-      //   Serial.print(chiliVector[i]);
-      // }
-    }
-    else
-    {
-=======
       // Serial.print("input =");
       // Serial.print(input);
       // Serial.print("H= ");
       // Serial.print(h);
       // Serial.print(st);
-
 
       // Serial.println("Havg= ");
 
-      // Serial.println("Chili vector: ");
-     
+      Serial.println("Chili vector: ");
 
       for (int i = 0; i < chiliVector.size(); ++i)
       {
         Serial.print(chiliVector[i]);
       }
-    }else {
->>>>>>> 7474267646b0d0fa05f64b290a5a7e781ddc1191
+    }
+    else
+    {
       analogWrite(2, 0); // ตั้งค่าความเร็วของไฟฟ้า
       analogWrite(4, 0);
-      red2 = 100;
-
-      _ui_label_set_property(ui_numGreen, _UI_LABEL_PROPERTY_TEXT, std::to_string(red2).c_str());
-      _ui_label_set_property(ui_numRed, _UI_LABEL_PROPERTY_TEXT, "-");
-      _ui_label_set_property(ui_numGray, _UI_LABEL_PROPERTY_TEXT, "-");
     }
   }
-  if (reset == 1)
+  else if (!status)
   {
-    // green2 = 0;
-    // numGray2 = 0;
-    red2 = 0;
-    _ui_label_set_property(ui_numGreen, _UI_LABEL_PROPERTY_TEXT, std::to_string(red2).c_str());
-    _ui_label_set_property(ui_numRed, _UI_LABEL_PROPERTY_TEXT, "0");
-    _ui_label_set_property(ui_numGray, _UI_LABEL_PROPERTY_TEXT, "0");
-
-    delay(1000);
+    analogWrite(2, 0); // ตั้งค่าความเร็วของไฟฟ้า
+    analogWrite(4, 0);
+  }
+  if (!status && onOffStage == 0)
+  {
+    analogWrite(2, 0); // ตั้งค่าความเร็วของไฟฟ้า
+    analogWrite(4, 0);
   }
 }

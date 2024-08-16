@@ -121,6 +121,7 @@ void switch_to_screen1(lv_timer_t *timer)
     _ui_screen_change(&ui_Screen2, LV_SCR_LOAD_ANIM_FADE_ON, 50, 0, &ui_Screen2_screen_init);
     lv_timer_del(timer); // ลบ timer หลังจากที่ใช้งานเสร็จแล้ว
 }
+bool status = false;
 void ui_event_Panel2(lv_event_t *e)
 {
     lv_event_code_t event_code = lv_event_get_code(e);
@@ -128,7 +129,7 @@ void ui_event_Panel2(lv_event_t *e)
     if (event_code == LV_EVENT_CLICKED)
     {
         _ui_screen_change(&ui_Screen3, LV_SCR_LOAD_ANIM_FADE_ON, 10, 0, &ui_Screen3_screen_init);
-
+        status = true ;
         lv_timer_t *timer = lv_timer_create(switch_to_screen1, 15000, NULL);
     }
 }
