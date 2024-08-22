@@ -439,7 +439,8 @@ void checkchii111() // gpt
     if (red < 255 && green < 255 && blue < 255)
     {
       Serial.println("--------------capturing--------------");
-      Serial.println("sumR : " + sumR);
+      Serial.println("sumR : ");
+      Serial.println(sumR);
 
       sumR = red + sumR;
       sumG = green + sumG;
@@ -560,18 +561,20 @@ void readobj()
     if (!chiliDetected)
     {
       chiliDetected = true;
+
       detectionTime = millis(); // บันทึกเวลาที่พริกเข้ามา
       Serial.println("++++++++++++++++++++++++Chili detected!++++++++++++++++++++++");
     }
-  }
-  else
-  {
-    // พริกออกไปแล้ว
-    if (chiliDetected && (millis() - detectionTime > debounceDelay))
+
+    else
     {
-      chiliDetected = false;
-      // ส่งค่าไปประมวลผล
-      chili = true;
+      // พริกออกไปแล้ว
+      if (chiliDetected && (millis() - detectionTime > debounceDelay))
+      {
+        chiliDetected = false;
+        // ส่งค่าไปประมวลผล
+        chili = true;
+      }
     }
   }
 }
@@ -592,42 +595,44 @@ void servoslite()
   {
     chiliVector.pop_back();
   }
-  if (!chiliVector.empty())
+  if (!chiliVector.empty() && chili)
+
   {
+    int chiliType = chiliVector.back();
 
-    if (chili)
+    if (chiliType == RED_CHILI)
     {
 
-      if (chiliVector.back() == RED_CHILI)
-      {
-
-        setServoPosition(0);
-        servoposition = 0;
-        chiliVector.pop_back();
-        chili = false;
-      }
-      else if (chiliVector.back() == GREEN_CHILI)
-      {
-
-        setServoPosition(90);
-        servoposition = 90;
-        chiliVector.pop_back();
-        chili = false;
-      }
-      else if (chiliVector.back() == EMPTY)
-      {
-
-        setServoPosition(45);
-        servoposition = 45;
-        chiliVector.pop_back();
-        chili = false;
-      }
-    }
-    else
-    {
+      setServoPosition(0);
+      servoposition = 0;
+      chiliVector.pop_back();
       chili = false;
-      setServoPosition(servoposition);
+      Serial.println("Red**************************************************************************************");
     }
+    else if (chiliType == GREEN_CHILI)
+    {
+
+      setServoPosition(90);
+      servoposition = 90;
+      chiliVector.pop_back();
+      chili = false;
+      Serial.println("Green**************************************************************************************");
+    }
+    else if (chiliType == EMPTY)
+    {
+
+      setServoPosition(45);
+      servoposition = 45;
+      chiliVector.pop_back();
+      chili = false;
+      Serial.println("Empty**************************************************************************************");
+    }
+  }
+  else
+  {
+    chili = false;
+    setServoPosition(servoposition);
+    // Serial.println("No chili reset**************************************************************************************");
   }
 }
 
