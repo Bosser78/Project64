@@ -550,33 +550,34 @@ bool chiliDetected = false;              // สถานะว่าพริก
 unsigned long detectionTime = 0;         // เวลาที่ตรวจจับพริก
 const unsigned long debounceDelay = 200; // เวลาหน่วงเพื่อป้องกันการตรวจจับซ้ำ
 bool chili = false;
+bool previousInput = 1;
 void readobj()
 {
-
   input = digitalRead(35);
 
-  if (input == 0)
+  // ตรวจจับการเปลี่ยนแปลงของเซนเซอร์จาก 1 เป็น 0
+  if (input == 0 && previousInput == 1 && !chiliDetected)
   {
-    // ตรวจพบพริก
-    if (!chiliDetected)
-    {
-      chiliDetected = true;
-
-      detectionTime = millis(); // บันทึกเวลาที่พริกเข้ามา
-      Serial.println("++++++++++++++++++++++++Chili detected!++++++++++++++++++++++");
-    }
-
-    else
-    {
-      // พริกออกไปแล้ว
-      if (chiliDetected && (millis() - detectionTime > debounceDelay))
-      {
-        chiliDetected = false;
-        // ส่งค่าไปประมวลผล
-        chili = true;
-      }
-    }
+    chiliDetected = true;
+    detectionTime = millis(); // บันทึกเวลาที่พริกเข้ามา
+    Serial.println("++++++++++++++++++++++++Chili detected!++++++++++++++++++++++");
   }
+
+  // ถ้าพริกยังถูกตรวจจับอยู่และเวลาที่ผ่านไปมากกว่า debounceDelay
+  if (chiliDetected && (millis() - detectionTime > debounceDelay))
+  {
+    chiliDetected = false;
+    chili = true; // ตั้งค่านี้เป็น true เพื่อบอกว่ามีพริกที่ต้องประมวลผล
+  }
+
+  // รีเซ็ตค่า chiliDetected เมื่อเซนเซอร์ไม่ตรวจจับพริกอีกต่อไป
+  if (input == 1)
+  {
+    chiliDetected = false;
+  }
+
+  // อัปเดตสถานะก่อนหน้า
+  previousInput = input;
 }
 void setServoPosition(int angle)
 {
@@ -595,12 +596,14 @@ void servoslite()
   {
     chiliVector.pop_back();
   }
+
+
+
   if (!chiliVector.empty() && chili)
 
   {
-    int chiliType = chiliVector.back();
 
-    if (chiliType == RED_CHILI)
+    if (chiliVector.back() == RED_CHILI)
     {
 
       setServoPosition(0);
@@ -609,7 +612,7 @@ void servoslite()
       chili = false;
       Serial.println("Red**************************************************************************************");
     }
-    else if (chiliType == GREEN_CHILI)
+    else if (chiliVector.back() == GREEN_CHILI)
     {
 
       setServoPosition(90);
@@ -618,7 +621,7 @@ void servoslite()
       chili = false;
       Serial.println("Green**************************************************************************************");
     }
-    else if (chiliType == EMPTY)
+    else if (chiliVector.back() == EMPTY)
     {
 
       setServoPosition(45);
@@ -627,6 +630,7 @@ void servoslite()
       chili = false;
       Serial.println("Empty**************************************************************************************");
     }
+    Serial.println("chili reset**************************************************************************************");
   }
   else
   {
