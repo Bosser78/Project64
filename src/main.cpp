@@ -658,7 +658,10 @@ void loop()
     Serial.print("----------------------------reset----------------------------------------");
     Serial.print("----------------------------reset----------------------------------------");
     Serial.print("----------------------------reset----------------------------------------");
+    
   }
+
+
   if (status && onOffStage == 0)
   {
 
@@ -697,6 +700,8 @@ void loop()
       sumB = 0;
       sumG = 0;
       sumR = 0;
+      lv_obj_add_state(ui_Button2, LV_STATE_DISABLED);
+      lv_obj_add_state(ui_Button3, LV_STATE_DISABLED);
       delay(500);
     }
   }
@@ -735,17 +740,22 @@ void loop()
     else
     {
       analogWrite(2, 0); // ตั้งค่าความเร็วของไฟฟ้า
-      analogWrite(4, 0);
+      analogWrite(4, 0);  
+
+      Serial.println("STOP------------------------------------------------------------------------------");
     }
   }
-  else if (!status)
+  // else if (!status)
+  // {
+  //   analogWrite(2, 0); // ตั้งค่าความเร็วของไฟฟ้า
+  //   analogWrite(4, 0);
+  //    Serial.println("not status---------------------------------------------------------");
+  // } 
+  else if (!status && onOffStage == 0)
   {
     analogWrite(2, 0); // ตั้งค่าความเร็วของไฟฟ้า
     analogWrite(4, 0);
-  }
-  if (!status && onOffStage == 0)
-  {
-    analogWrite(2, 0); // ตั้งค่าความเร็วของไฟฟ้า
-    analogWrite(4, 0);
+
+    Serial.println("not status-----------------------------------------------------------");
   }
 }

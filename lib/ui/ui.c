@@ -162,7 +162,7 @@ void ui_event_PanelGray(lv_event_t *e)
     }
 }
 int onOffStage = 0;
-
+int st = 0;
 void ui_event_BTNpower(lv_event_t *e)
 {
     lv_event_code_t event_code = lv_event_get_code(e);
@@ -175,13 +175,20 @@ void ui_event_BTNpower(lv_event_t *e)
         {
             _ui_label_set_property(ui_LabelOnOff, _UI_LABEL_PROPERTY_TEXT, "เปิด");
             _ui_switch_theme(UI_THEME_STOP);
+            lv_obj_clear_state(ui_Button2, LV_STATE_DISABLED);
+            lv_obj_clear_state(ui_Button3, LV_STATE_DISABLED);
             onOffStage = 1;
+            st = 0;
         }
         else
         {
             // setOnOff(e);
             _ui_label_set_property(ui_LabelOnOff, _UI_LABEL_PROPERTY_TEXT, "ปิด");
             _ui_switch_theme(UI_THEME_DEFAULT);
+            // lv_obj_set_click(ui_Button2, false);
+            // lv_obj_set_click(ui_Button3, false);
+            lv_obj_add_state(ui_Button2, LV_STATE_DISABLED);
+            lv_obj_add_state(ui_Button3, LV_STATE_DISABLED);
             onOffStage = 0;
         }
     }
@@ -200,7 +207,7 @@ void ui_event_Slider1(lv_event_t *e)
     }
 }
 
-int st = 0;
+
 
 void ui_event_Button2(lv_event_t *e)
 {
@@ -227,16 +234,13 @@ void ui_event_Button3(lv_event_t *e)
 {
     lv_event_code_t event_code = lv_event_get_code(e);
     lv_obj_t *target = lv_event_get_target(e);
-    if (event_code == LV_EVENT_CLICKED)
+    if (event_code == LV_EVENT_RELEASED)
     {
 
             reset = 1;
         
         
-    }else
-        {
-            reset = 0;
-        }
+    }
 }
 
 

@@ -142,6 +142,7 @@ void ui_Screen2_screen_init(void)
                                            _ui_theme_alpha_BG_Color);
 
     ui_Slider1 = lv_slider_create(ui_Screen2);
+    lv_slider_set_range(ui_Slider1, 10, 100);
     lv_slider_set_value(ui_Slider1, 50, LV_ANIM_OFF);
     if(lv_slider_get_mode(ui_Slider1) == LV_SLIDER_MODE_RANGE) lv_slider_set_left_value(ui_Slider1, 0, LV_ANIM_OFF);
     lv_obj_set_width(ui_Slider1, 333);
