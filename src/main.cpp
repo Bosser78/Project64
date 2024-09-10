@@ -579,16 +579,34 @@ void readobj()
   // อัปเดตสถานะก่อนหน้า
   previousInput = input;
 }
+// void setServoPosition(int angle)
+// {
+//   // คำนวณความกว้างของพัลส์ที่ต้องการ (1ms ถึง 2ms)
+//   int pulseWidth = map(angle, 0, 180, 544, 2400); // 544us ถึง 2400us
+//   // ส่งพัลส์ PWM ไปที่พินของเซอร์โว
+//   digitalWrite(12, HIGH);
+//   delayMicroseconds(pulseWidth);
+//   digitalWrite(12, LOW);
+//   delay(20 - pulseWidth / 1000);
+// }
+
 void setServoPosition(int angle)
 {
-  // คำนวณความกว้างของพัลส์ที่ต้องการ (1ms ถึง 2ms)
-  int pulseWidth = map(angle, 0, 180, 544, 2400); // 544us ถึง 2400us
-  // ส่งพัลส์ PWM ไปที่พินของเซอร์โว
-  digitalWrite(12, HIGH);
-  delayMicroseconds(pulseWidth);
-  digitalWrite(12, LOW);
-  delay(20 - pulseWidth / 1000);
+  // ปรับช่วงการทำงานสำหรับเซอร์โว 90 องศา
+  int pulseWidth = map(angle, 0, 90, 1000, 2000); // 1000us ถึง 2000us
+  unsigned long currentTime = micros();
+  unsigned long endTime = currentTime + 20000UL; // 20ms period
+
+  while (micros() < endTime)
+  {
+    // ส่งพัลส์ PWM ไปที่พินของเซอร์โว
+    digitalWrite(12, HIGH);
+    delayMicroseconds(pulseWidth);
+    digitalWrite(12, LOW);
+    delayMicroseconds(20000UL - pulseWidth); // 20ms period - pulse width
+  }
 }
+
 bool hasRemoved = false;
 void servoslite()
 {
@@ -607,7 +625,7 @@ void servoslite()
     {
 
       setServoPosition(0);
-      servoposition = 0;
+      servoposition = 15;
       chiliVector.pop_back();
       chili = false;
       Serial.println("Red**************************************************************************************");
@@ -616,7 +634,7 @@ void servoslite()
     {
 
       setServoPosition(90);
-      servoposition = 90;
+      servoposition = 75;
       chiliVector.pop_back();
       chili = false;
       Serial.println("Green**************************************************************************************");
@@ -742,7 +760,7 @@ void loop()
       analogWrite(2, 0); // ตั้งค่าความเร็วของไฟฟ้า
       analogWrite(4, 0);  
 
-      Serial.println("STOP------------------------------------------------------------------------------");
+      // Serial.println("STOP------------------------------------------------------------------------------");
     }
   }
   // else if (!status)
@@ -756,6 +774,6 @@ void loop()
     analogWrite(2, 0); // ตั้งค่าความเร็วของไฟฟ้า
     analogWrite(4, 0);
 
-    Serial.println("not status-----------------------------------------------------------");
+    // Serial.println("not status-----------------------------------------------------------");
   }
 }
