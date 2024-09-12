@@ -52,11 +52,14 @@ extern lv_obj_t * ui_Label10;
 extern lv_obj_t * ui_Label11;
 extern lv_obj_t * ui_Label12;
 extern lv_obj_t * ui_speed;
+void ui_event_Button1(lv_event_t *e);
+extern lv_obj_t * ui_Button1;
 extern lv_obj_t * ui____initial_actions0;
 void ui_event_Button2(lv_event_t *e);
 extern lv_obj_t *ui_Button2;
 void ui_event_Button3(lv_event_t *e);
 extern lv_obj_t *ui_Button3;
+extern lv_obj_t *ui_Image3;
 
 // SCREEN: ui_Screen3
 void ui_Screen3_screen_init(void);
@@ -67,6 +70,39 @@ extern lv_obj_t *ui_Image2;
 extern lv_obj_t *ui_Label1;
 extern lv_obj_t *ui_Label6;
 extern lv_obj_t *ui____initial_actions0;
+
+// SCREEN: ui_Screen4
+void ui_Screen4_screen_init(void);
+extern lv_obj_t *ui_Screen4;
+extern lv_obj_t *ui_Panel7;
+void ui_event_Button4(lv_event_t *e);
+void ui_event_Button5(lv_event_t *e);
+extern lv_obj_t *ui_Button4;
+extern lv_obj_t *ui_Button5;
+extern lv_obj_t *ui_Panel4;
+extern lv_obj_t *ui_Panel5;
+extern lv_obj_t *ui_Panel6;
+extern lv_obj_t *ui_Label7;
+extern lv_obj_t *ui_Label8;
+extern lv_obj_t *ui_Label9;
+void ui_event_Button6(lv_event_t *e);
+extern lv_obj_t *ui_Button6;
+void ui_event_Button7(lv_event_t *e);
+void ui_event_Button8(lv_event_t *e);
+extern lv_obj_t *ui_Button7;
+extern lv_obj_t *ui_Label13;
+extern lv_obj_t *ui_Label14;
+extern lv_obj_t *ui_Label15;
+extern lv_obj_t *ui_Button8;
+extern lv_obj_t *ui_Label16;
+extern lv_obj_t *ui_Label17;
+extern lv_obj_t *ui_Label18;
+extern lv_obj_t *ui_Label19;
+extern lv_obj_t *ui_Label20;
+extern lv_obj_t *ui_Label21;
+extern lv_obj_t *ui____initial_actions0;
+
+LV_IMG_DECLARE(ui_img_803245397); // assets/503849 (2).png
 
 LV_IMG_DECLARE(ui_img_eight_32_png);    // assets/eight_32.png
 LV_IMG_DECLARE(ui_img_eight_64_png);    // assets/eight_64.png

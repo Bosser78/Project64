@@ -363,11 +363,12 @@ void setup()
   pinMode(12, OUTPUT);
 }
 extern int mappspeed1, mappspeed2, speed, status;
-extern int onOffStage, reset, st;
+extern int onOffStage, reset, st, positionLCD;
 double red, green, blue;
 double h = 0;     // Initialize H value
 double h_sum = 0; // Initialize sum of H values
 int h_count = 0;  // Initialize count of H values
+int h_count1 = 0; // Initialize count of H values
 // int pwm_count = 0; // ต้องทำค่าให้เข้ากับความเร็ว
 int input;
 double h_avg;
@@ -392,6 +393,17 @@ int count = 0;
 int statusPW;
 int calibrateR, calibrateG, calibrateB;
 bool calibrate = true;
+
+float h_avgR;
+float h_avgG;
+float h_avgB;
+int setchii_red = 80;
+int setchii_green = 10;
+int setchii_blue;
+int LCD_R;
+int LCD_G;
+int LCD_B;
+extern int BTsetchii;
 
 void readtsc()
 {
@@ -490,9 +502,9 @@ void checkchii111() // gpt
 
   if (!capturing && h_count > 0)
   {
-    float h_avgR = (float)sumR / h_count;
-    float h_avgG = (float)sumG / h_count;
-    float h_avgB = (float)sumB / h_count;
+    h_avgR = (float)sumR / h_count;
+    h_avgG = (float)sumG / h_count;
+    h_avgB = (float)sumB / h_count;
     Serial.print("count ");
     Serial.println(h_count);
 
@@ -508,7 +520,7 @@ void checkchii111() // gpt
 
     Serial.println("Chili is : ");
 
-    if ((h_avgR > h_avgG && h_avgR > h_avgB) && h_avgR > 80)
+    if ((h_avgR > h_avgG && h_avgR > h_avgB) && h_avgR > setchii_red)
     {
       Serial.println("Red");
 
@@ -517,7 +529,7 @@ void checkchii111() // gpt
 
       chiliVector.insert(chiliVector.begin(), 1);
     }
-    else if ((h_avgG > h_avgR && h_avgG > h_avgB) && h_avgG > 10)
+    else if ((h_avgG > h_avgR && h_avgG > h_avgB) && h_avgG > setchii_green)
     {
       Serial.println("Green");
       green2++;
@@ -540,6 +552,7 @@ void checkchii111() // gpt
     sumG = 0;
     sumB = 0;
     h_count = 0;
+    h_count1 = 1;
     Serial.println("h_avgR : " + String(sumR));
     Serial.println("h_avgG : " + String(sumG));
     Serial.println("h_avgB : " + String(sumB));
@@ -615,8 +628,6 @@ void servoslite()
     chiliVector.pop_back();
   }
 
-
-
   if (!chiliVector.empty() && chili)
 
   {
@@ -676,9 +687,7 @@ void loop()
     Serial.print("----------------------------reset----------------------------------------");
     Serial.print("----------------------------reset----------------------------------------");
     Serial.print("----------------------------reset----------------------------------------");
-    
   }
-
 
   if (status && onOffStage == 0)
   {
@@ -718,8 +727,7 @@ void loop()
       sumB = 0;
       sumG = 0;
       sumR = 0;
-      lv_obj_add_state(ui_Button2, LV_STATE_DISABLED);
-      lv_obj_add_state(ui_Button3, LV_STATE_DISABLED);
+
       delay(500);
     }
   }
@@ -736,29 +744,74 @@ void loop()
       readobj();
 
       servoslite();
-      // delay();
+      if (BTsetchii == 4)
+      {
 
-      // Serial.println("Chili vector: ");
+        setchii_red = 80;
+        setchii_green = 10;
+        setchii_blue = 10;
+        BTsetchii = 0;
+        _ui_label_set_property(ui_Label7, _UI_LABEL_PROPERTY_TEXT, "-");
+        _ui_label_set_property(ui_Label8, _UI_LABEL_PROPERTY_TEXT, "-");
+        _ui_label_set_property(ui_Label9, _UI_LABEL_PROPERTY_TEXT, "-");
+        Serial.println("setchii: reset ------------------------------------------------------ ");
+        Serial.println(setchii_red);
+        Serial.println(setchii_green);
+        Serial.println(setchii_blue);
+      }
+      if (positionLCD == 1 && !capturing && h_count1 > 0)
+      {
+        h_count1 = 0;
 
-      // Serial.print("input =");
-      // Serial.print(input);
-      // Serial.print("H= ");
-      // Serial.print(h);
-      // Serial.print(st);
+        LCD_R = static_cast<int>(h_avgR);
+        LCD_G = static_cast<int>(h_avgG);
+        LCD_B = static_cast<int>(h_avgB);
+        Serial.println("LCD:2 ");
+        _ui_label_set_property(ui_Label7, _UI_LABEL_PROPERTY_TEXT, std::to_string(LCD_R).c_str());
+        _ui_label_set_property(ui_Label8, _UI_LABEL_PROPERTY_TEXT, std::to_string(LCD_G).c_str());
+        _ui_label_set_property(ui_Label9, _UI_LABEL_PROPERTY_TEXT, std::to_string(LCD_B).c_str());
 
-      // Serial.println("Havg= ");
+        if (BTsetchii == 1)
+        {
+          setchii_red = LCD_R;
+          BTsetchii = 0;
+          Serial.print("setchii: red ------------------------------------------------------ ");
+          Serial.println(setchii_red);
+        }
+        if (BTsetchii == 2)
+        {
+          setchii_green = LCD_G;
+          BTsetchii = 0;
+          Serial.print("setchii: green ------------------------------------------------------ ");
+          Serial.println(setchii_green);
+        }
+        if (BTsetchii == 3)
+        {
+          setchii_blue = LCD_B;
+          BTsetchii = 0;
+          Serial.print("setchii: blue ------------------------------------------------------ ");
+          Serial.println(setchii_blue);
+        }
 
-      Serial.println("Chili vector: ");
+        Serial.print("red: ");
+        Serial.println(setchii_red);
+        Serial.print("green: ");
+        Serial.println(setchii_green);
+        Serial.print("blue: ");
+        Serial.println(setchii_blue);
+      }
+
+      Serial.print("Chili vector: ");
 
       for (int i = 0; i < chiliVector.size(); ++i)
       {
-        Serial.print(chiliVector[i]);
+        Serial.println(chiliVector[i]);
       }
     }
     else
     {
       analogWrite(2, 0); // ตั้งค่าความเร็วของไฟฟ้า
-      analogWrite(4, 0);  
+      analogWrite(4, 0);
 
       // Serial.println("STOP------------------------------------------------------------------------------");
     }
@@ -768,7 +821,7 @@ void loop()
   //   analogWrite(2, 0); // ตั้งค่าความเร็วของไฟฟ้า
   //   analogWrite(4, 0);
   //    Serial.println("not status---------------------------------------------------------");
-  // } 
+  // }
   else if (!status && onOffStage == 0)
   {
     analogWrite(2, 0); // ตั้งค่าความเร็วของไฟฟ้า

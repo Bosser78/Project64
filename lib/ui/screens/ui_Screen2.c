@@ -147,8 +147,8 @@ void ui_Screen2_screen_init(void)
     if(lv_slider_get_mode(ui_Slider1) == LV_SLIDER_MODE_RANGE) lv_slider_set_left_value(ui_Slider1, 0, LV_ANIM_OFF);
     lv_obj_set_width(ui_Slider1, 333);
     lv_obj_set_height(ui_Slider1, 29);
-    lv_obj_set_x(ui_Slider1, 0);
-    lv_obj_set_y(ui_Slider1, 100);
+    lv_obj_set_x(ui_Slider1, -52);
+    lv_obj_set_y(ui_Slider1, 87);
     lv_obj_set_align(ui_Slider1, LV_ALIGN_CENTER);
 
 
@@ -188,8 +188,8 @@ void ui_Screen2_screen_init(void)
     ui_Label12 = lv_label_create(ui_Screen2);
     lv_obj_set_width(ui_Label12, LV_SIZE_CONTENT);   /// 1
     lv_obj_set_height(ui_Label12, LV_SIZE_CONTENT);    /// 1
-    lv_obj_set_x(ui_Label12, -17);
-    lv_obj_set_y(ui_Label12, 134);
+    lv_obj_set_x(ui_Label12, -100);
+    lv_obj_set_y(ui_Label12, 131);
     lv_obj_set_align(ui_Label12, LV_ALIGN_CENTER);
     lv_label_set_text(ui_Label12, "ระดับความเร็ว");
     lv_obj_set_style_text_font(ui_Label12, &ui_font_Font24, LV_PART_MAIN | LV_STATE_DEFAULT);
@@ -197,13 +197,33 @@ void ui_Screen2_screen_init(void)
     ui_speed = lv_label_create(ui_Screen2);
     lv_obj_set_width(ui_speed, LV_SIZE_CONTENT);   /// 1
     lv_obj_set_height(ui_speed, LV_SIZE_CONTENT);    /// 1
-    lv_obj_set_x(ui_speed, 72);
+    lv_obj_set_x(ui_speed, -2);
     lv_obj_set_y(ui_speed, 135);
     lv_obj_set_align(ui_speed, LV_ALIGN_CENTER);
     lv_label_set_text(ui_speed, "50");
     lv_obj_set_style_text_color(ui_speed, lv_color_hex(0x808080), LV_PART_MAIN | LV_STATE_DEFAULT);
     lv_obj_set_style_text_opa(ui_speed, 255, LV_PART_MAIN | LV_STATE_DEFAULT);
     lv_obj_set_style_text_font(ui_speed, &ui_font_Font24, LV_PART_MAIN | LV_STATE_DEFAULT);
+
+    ui_Button1 = lv_btn_create(ui_Screen2);
+    lv_obj_set_width(ui_Button1, 64);
+    lv_obj_set_height(ui_Button1, 60);
+    lv_obj_set_x(ui_Button1, 197);
+    lv_obj_set_y(ui_Button1, 118);
+    lv_obj_set_align(ui_Button1, LV_ALIGN_CENTER);
+    lv_obj_add_flag(ui_Button1, LV_OBJ_FLAG_SCROLL_ON_FOCUS); /// Flags
+    lv_obj_clear_flag(ui_Button1, LV_OBJ_FLAG_SCROLLABLE);    /// Flags
+
+    ui_Image3 = lv_img_create(ui_Screen2);
+    lv_img_set_src(ui_Image3, &ui_img_803245397);
+    lv_obj_set_width(ui_Image3, LV_SIZE_CONTENT);  /// 50
+    lv_obj_set_height(ui_Image3, LV_SIZE_CONTENT); /// 50
+    lv_obj_set_x(ui_Image3, 197);
+    lv_obj_set_y(ui_Image3, 118);
+    lv_obj_set_align(ui_Image3, LV_ALIGN_CENTER);
+    lv_obj_add_flag(ui_Image3, LV_OBJ_FLAG_ADV_HITTEST);  /// Flags
+    lv_obj_clear_flag(ui_Image3, LV_OBJ_FLAG_SCROLLABLE); /// Flags
+
 
     lv_obj_add_event_cb(ui_PanelGreen, ui_event_PanelGreen, LV_EVENT_ALL, NULL);
     lv_obj_add_event_cb(ui_PanelRed, ui_event_PanelRed, LV_EVENT_ALL, NULL);
@@ -212,4 +232,5 @@ void ui_Screen2_screen_init(void)
     lv_obj_add_event_cb(ui_Slider1, ui_event_Slider1, LV_EVENT_ALL, NULL);
     lv_obj_add_event_cb(ui_Button2, ui_event_Button2, LV_EVENT_ALL, NULL);
     lv_obj_add_event_cb(ui_Button3, ui_event_Button3, LV_EVENT_ALL, NULL);
+    lv_obj_add_event_cb(ui_Button1, ui_event_Button1, LV_EVENT_ALL, NULL);
 }
