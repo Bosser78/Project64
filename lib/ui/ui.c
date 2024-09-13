@@ -339,14 +339,25 @@ void ui_event_Button7(lv_event_t *e)
         BTsetchii = 3;
     }
 }
+
+extern int setchii_red;
+extern int setchii_green;
+extern int setchii_blue;
 void ui_event_Button8(lv_event_t *e)
 {
     lv_event_code_t event_code = lv_event_get_code(e);
     lv_obj_t *target = lv_event_get_target(e);
     if (event_code == LV_EVENT_RELEASED)
     {
-        BTsetchii = 4;
-    }
+        setchii_red = 80;
+        setchii_green = 10;
+        setchii_blue = 10;
+        BTsetchii = 4 ;
+        _ui_label_set_property(ui_Label7, _UI_LABEL_PROPERTY_TEXT, "-");
+        _ui_label_set_property(ui_Label8, _UI_LABEL_PROPERTY_TEXT, "-");
+        _ui_label_set_property(ui_Label9, _UI_LABEL_PROPERTY_TEXT, "-");
+
+        }
 }
 ///////////////////// SCREENS ////////////////////
 

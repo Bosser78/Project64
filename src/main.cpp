@@ -397,8 +397,8 @@ bool calibrate = true;
 float h_avgR;
 float h_avgG;
 float h_avgB;
-int setchii_red = 80;
-int setchii_green = 10;
+int setchii_red = 50; //50
+int setchii_green = 20; //20
 int setchii_blue;
 int LCD_R;
 int LCD_G;
@@ -469,7 +469,7 @@ void checkchii111() // gpt
       lastTimeChecked = millis(); // อัพเดทเวลาเมื่อเจอค่าที่ตรงกับเงื่อนไข
     }
     // หากไม่เจอพริกในช่วงเวลาเกิน 0.4 วินาที
-    if (millis() - lastTimeChecked > 100)
+    if (millis() - lastTimeChecked > 70)
     {
       Serial.println("time out");
       capturing = false; // หยุดเก็บค่าถ้าเวลาเกิน 0.4 วินาที
@@ -482,7 +482,7 @@ void checkchii111() // gpt
     Serial.println("not obj");
 
     // ตรวจจับพริก
-    if ((red > 7 && green > 7 && blue > 7))
+    if ((red > 7 ))
     {
       if (startCaptureTime == 0)
       {
@@ -505,6 +505,9 @@ void checkchii111() // gpt
     h_avgR = (float)sumR / h_count;
     h_avgG = (float)sumG / h_count;
     h_avgB = (float)sumB / h_count;
+
+    float has_avgRG = h_avgR/h_avgG; 
+    float has_avgGB = h_avgG/h_avgB; 
     Serial.print("count ");
     Serial.println(h_count);
 
@@ -520,29 +523,41 @@ void checkchii111() // gpt
 
     Serial.println("Chili is : ");
 
-    if ((h_avgR > h_avgG && h_avgR > h_avgB) && h_avgR > setchii_red)
+    if ((has_avgRG >= 3) && has_avgGB <= 1.5 && (h_avgR > setchii_red && h_avgB > setchii_blue))
     {
       Serial.println("Red");
+      Serial.println(setchii_green);
+      Serial.println(setchii_red);
+      Serial.println(has_avgRG);
+      Serial.println(has_avgGB);
 
       red2++;
       _ui_label_set_property(ui_numRed, _UI_LABEL_PROPERTY_TEXT, std::to_string(red2).c_str());
 
       chiliVector.insert(chiliVector.begin(), 1);
     }
-    else if ((h_avgG > h_avgR && h_avgG > h_avgB) && h_avgG > setchii_green)
+    else if ((1 < has_avgRG && has_avgRG < 1.7) && has_avgGB >= 1.5 && (h_avgG > setchii_green && h_avgB > setchii_blue) )
     {
       Serial.println("Green");
+      Serial.println(setchii_green);
+      Serial.println(setchii_red);
+      Serial.println(has_avgRG);
+      Serial.println(has_avgGB);
+
       green2++;
       _ui_label_set_property(ui_numGreen, _UI_LABEL_PROPERTY_TEXT, std::to_string(green2).c_str());
 
       chiliVector.insert(chiliVector.begin(), 2);
     }
-    else
+    else 
     {
       Serial.println("Not");
       numGray2++;
       _ui_label_set_property(ui_numGray, _UI_LABEL_PROPERTY_TEXT, std::to_string(numGray2).c_str());
-
+      Serial.println(setchii_green);
+      Serial.println(setchii_red);
+      Serial.println(has_avgRG);
+      Serial.println(has_avgGB);
       chiliVector.insert(chiliVector.begin(), 3);
     }
 
@@ -561,7 +576,7 @@ void checkchii111() // gpt
 const int sensorPin = 2;                 // Pin ที่เชื่อมต่อกับเซนเซอร์
 bool chiliDetected = false;              // สถานะว่าพริกเข้ามาหรือยัง
 unsigned long detectionTime = 0;         // เวลาที่ตรวจจับพริก
-const unsigned long debounceDelay = 200; // เวลาหน่วงเพื่อป้องกันการตรวจจับซ้ำ
+const unsigned long debounceDelay = 50; // เวลาหน่วงเพื่อป้องกันการตรวจจับซ้ำ
 bool chili = false;
 bool previousInput = 1;
 void readobj()
@@ -744,21 +759,21 @@ void loop()
       readobj();
 
       servoslite();
-      if (BTsetchii == 4)
-      {
+      // if (BTsetchii == 4)
+      // {
 
-        setchii_red = 80;
-        setchii_green = 10;
-        setchii_blue = 10;
-        BTsetchii = 0;
-        _ui_label_set_property(ui_Label7, _UI_LABEL_PROPERTY_TEXT, "-");
-        _ui_label_set_property(ui_Label8, _UI_LABEL_PROPERTY_TEXT, "-");
-        _ui_label_set_property(ui_Label9, _UI_LABEL_PROPERTY_TEXT, "-");
-        Serial.println("setchii: reset ------------------------------------------------------ ");
-        Serial.println(setchii_red);
-        Serial.println(setchii_green);
-        Serial.println(setchii_blue);
-      }
+      //   setchii_red = 80;
+      //   setchii_green = 10;
+      //   setchii_blue = 10;
+      //   BTsetchii = 0;
+      //   _ui_label_set_property(ui_Label7, _UI_LABEL_PROPERTY_TEXT, "-");
+      //   _ui_label_set_property(ui_Label8, _UI_LABEL_PROPERTY_TEXT, "-");
+      //   _ui_label_set_property(ui_Label9, _UI_LABEL_PROPERTY_TEXT, "-");
+      //   Serial.println("setchii: reset ------------------------------------------------------ ");
+      //   Serial.println(setchii_red);
+      //   Serial.println(setchii_green);
+      //   Serial.println(setchii_blue);
+      // }
       if (positionLCD == 1 && !capturing && h_count1 > 0)
       {
         h_count1 = 0;
@@ -773,24 +788,32 @@ void loop()
 
         if (BTsetchii == 1)
         {
-          setchii_red = LCD_R;
+          setchii_red = LCD_R - 20;
           BTsetchii = 0;
           Serial.print("setchii: red ------------------------------------------------------ ");
           Serial.println(setchii_red);
         }
         if (BTsetchii == 2)
         {
-          setchii_green = LCD_G;
+          setchii_green = LCD_G - 16;
           BTsetchii = 0;
           Serial.print("setchii: green ------------------------------------------------------ ");
           Serial.println(setchii_green);
         }
         if (BTsetchii == 3)
         {
-          setchii_blue = LCD_B;
+          setchii_blue = LCD_B - 4 ;
           BTsetchii = 0;
           Serial.print("setchii: blue ------------------------------------------------------ ");
           Serial.println(setchii_blue);
+        }
+        if (BTsetchii == 4)
+        {
+          Serial.println("setchii: reset ------------------------------------------------------ ");
+          Serial.println(setchii_red);
+          Serial.println(setchii_green);
+          Serial.println(setchii_blue);
+          BTsetchii = 0;
         }
 
         Serial.print("red: ");
